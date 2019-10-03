@@ -4,7 +4,9 @@
 #ifdef __APPLE__
 #include <OpenGL/gl3.h>
 #else
+
 #include <GL/glew.h>
+
 #endif
 
 #include <glm/glm.hpp>
@@ -14,21 +16,23 @@
 
 #include "Object.h"
 
-class PointCloud : public Object
-{
+class PointCloud : public Object {
 private:
-	std::vector<glm::vec3> points;
-	GLuint vao, vbo;
-	GLfloat pointSize;
+    std::vector<glm::vec3> points;
+    GLuint vao, vbo;
+    GLfloat pointSize;
 public:
-	PointCloud(std::string objFilename, GLfloat pointSize);
-	~PointCloud();
+    PointCloud(std::string objFilename, GLfloat pointSize = 10);
 
-	void draw();
-	void update();
+    ~PointCloud();
 
-	void updatePointSize(GLfloat size);
-	void spin(float deg);
+    void draw();
+
+    void update();
+
+    void updatePointSize(GLfloat delta);
+
+    void spin(float deg);
 };
 
 #endif
