@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(Project1)
+project(Project2)
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -11,5 +11,5 @@ find_package(GLM REQUIRED)
 
 aux_source_directory(. EXE_SRCS)
 
-add_executable(Project1 "${EXE_SRCS}")
-target_link_libraries(Project1 GLEW::glew_s GLFW3::GLFW3 glm)
+add_executable(Project2 "${EXE_SRCS}")
+target_link_libraries(Project2 GLEW::glew_s GLFW3::GLFW3 glm)
