@@ -9,7 +9,12 @@ find_package(GLEW REQUIRED)
 find_package(GLFW3 REQUIRED)
 find_package(GLM REQUIRED)
 
-aux_source_directory(. EXE_SRCS)
-
-add_executable(Project2 "${EXE_SRCS}")
+add_executable(Project2
+        main.cpp
+        shader.cpp shader.h
+        Window.cpp Window.h
+        Object.h
+        Cube.cpp Cube.h
+        PointCloud.cpp PointCloud.h
+        Mesh.cpp Mesh.h)
 target_link_libraries(Project2 GLEW::glew_s GLFW3::GLFW3 glm)

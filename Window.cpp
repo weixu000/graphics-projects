@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "Mesh.h"
 
 int Window::width;
 int Window::height;
@@ -6,10 +7,10 @@ int Window::height;
 const char *Window::windowTitle = "GLFW Starter Project";
 
 // Objects to display.
-PointCloud *Window::models[3];
+Object *Window::models[3];
 
 // The object currently displaying.
-PointCloud *Window::currentObj;
+Object *Window::currentObj;
 
 glm::mat4 Window::projection; // Projection matrix.
 
@@ -49,9 +50,9 @@ bool Window::initializeProgram() {
 }
 
 bool Window::initializeObjects() {
-    models[0] = new PointCloud("meshes/bunny.obj");
-    models[1] = new PointCloud("meshes/dragon.obj");
-    models[2] = new PointCloud("meshes/bear.obj");
+    models[0] = new Mesh("meshes/bunny.obj");
+    models[1] = new Mesh("meshes/dragon.obj");
+    models[2] = new Mesh("meshes/bear.obj");
 
     // Set cube to be the first to display
     currentObj = models[0];
@@ -183,13 +184,6 @@ void Window::keyCallback(GLFWwindow *window, int key, int scancode, int action, 
                 break;
             default:
                 break;
-        }
-    }
-    if (key == GLFW_KEY_P) {
-        if (mods & GLFW_MOD_SHIFT) {
-            currentObj->updatePointSize(+0.2);
-        } else {
-            currentObj->updatePointSize(-0.2);
         }
     }
 }

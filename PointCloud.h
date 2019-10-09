@@ -22,7 +22,7 @@ private:
     GLuint vao, vbo;
     GLfloat pointSize;
 public:
-    PointCloud(std::string objFilename, GLfloat pointSize = 10);
+    explicit PointCloud(const std::string &objFilename, GLfloat pointSize = 10);
 
     ~PointCloud();
 

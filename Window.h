@@ -20,8 +20,6 @@
 #include <memory>
 
 #include "Object.h"
-#include "Cube.h"
-#include "PointCloud.h"
 #include "shader.h"
 
 class Window {
@@ -29,8 +27,8 @@ public:
     static int width;
     static int height;
     static const char *windowTitle;
-    static PointCloud *models[3];
-    static PointCloud *currentObj;
+    static Object *models[3];
+    static Object *currentObj;
     static glm::mat4 projection;
     static glm::mat4 view;
     static glm::vec3 eye, center, up;

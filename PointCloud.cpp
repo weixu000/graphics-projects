@@ -4,7 +4,7 @@
 #include <sstream>
 #include <iostream>
 
-PointCloud::PointCloud(std::string objFilename, GLfloat pointSize)
+PointCloud::PointCloud(const std::string &objFilename, GLfloat pointSize)
         : pointSize(pointSize) {
     /*
      * Read points from an obj file.
