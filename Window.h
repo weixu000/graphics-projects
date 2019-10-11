@@ -57,6 +57,8 @@ public:
     static void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
 
     static void cursorPosCallback(GLFWwindow *window, double x, double y);
+
+    static void scrollCallback(GLFWwindow *window, double xoffset, double yoffset);
 };
 
 #endif
