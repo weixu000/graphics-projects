@@ -34,6 +34,10 @@ public:
     static glm::vec3 eye, center, up;
     static GLuint program, projectionLoc, viewLoc, modelLoc, colorLoc;
 
+    static bool dragging;
+    static glm::vec3 startDrag;
+    static glm::mat4 dragRot;
+
     static bool initializeProgram();
 
     static bool initializeObjects();
@@ -49,6 +53,10 @@ public:
     static void displayCallback(GLFWwindow *);
 
     static void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
+
+    static void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
+
+    static void cursorPosCallback(GLFWwindow *window, double x, double y);
 };
 
 #endif

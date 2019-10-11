@@ -30,8 +30,6 @@ public:
 
     void update();
 
-    void spin(float deg);
-
     void loadOBJ(const std::string &objFilename);
 };
 

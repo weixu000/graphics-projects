@@ -28,6 +28,11 @@ GLuint Window::viewLoc; // Location of view in shader.
 GLuint Window::modelLoc; // Location of model in shader.
 GLuint Window::colorLoc; // Location of color in shader.
 
+bool Window::dragging = false;
+glm::vec3 Window::startDrag;
+glm::mat4 Window::dragRot(1.0f);
+
+
 bool Window::initializeProgram() {
     // Create a shader program with a vertex shader and a fragment shader.
     program = LoadShaders("shaders/shader.vert", "shaders/shader.frag");
@@ -149,7 +154,7 @@ void Window::displayCallback(GLFWwindow *window) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Specify the values of the uniform variables we are going to use.
-    glm::mat4 model = currentObj->getModel();
+    glm::mat4 model = dragRot * currentObj->getModel();
     glm::vec3 color = currentObj->getColor();
     glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
@@ -184,6 +189,45 @@ void Window::keyCallback(GLFWwindow *window, int key, int scancode, int action, 
                 break;
             default:
                 break;
+        }
+    }
+}
+
+void Window::mouseButtonCallback(GLFWwindow *window, int button, int action, int mods) {
+    switch (button) {
+        case GLFW_MOUSE_BUTTON_LEFT:
+            if (action == GLFW_PRESS) {
+                double x, y;
+                glfwGetCursorPos(window, &x, &y);
+                startDrag.x = 2 * x / width - 1;
+                startDrag.y = -(2 * y / height - 1);
+                auto z2 = 1 - startDrag.x * startDrag.x - startDrag.y * startDrag.y;
+                if (z2 > 0) {
+                    dragging = true;
+                    startDrag.z = glm::sqrt(z2);
+                }
+                std::cout << "Start draging" << std::endl;
+            } else if (action == GLFW_RELEASE) {
+                dragging = false;
+                currentObj->getModel() = dragRot * currentObj->getModel();
+                dragRot = glm::mat4(1.0);
+                std::cout << "End draging" << std::endl;
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void Window::cursorPosCallback(GLFWwindow *window, double x, double y) {
+    if (dragging) {
+        glm::vec3 cur(2 * x / width - 1, -(2 * y / height - 1), 0);
+        auto z2 = 1 - cur.x * cur.x - cur.y * cur.y;
+        if (z2 > 0) {
+            cur.z = glm::sqrt(z2);
+            auto rad = glm::acos(glm::dot(startDrag, cur));
+            auto axis = glm::cross(startDrag, cur);
+            dragRot = glm::mat4_cast(glm::angleAxis(rad, axis));
         }
     }
 }

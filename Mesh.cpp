@@ -110,10 +110,4 @@ void Mesh::draw() {
 
 void Mesh::update() {
     // Spin the cube by 1 degree.
-    spin(0.1f);
-}
-
-void Mesh::spin(float deg) {
-    // Update the model matrix by multiplying a rotation matrix
-    model = glm::rotate(glm::radians(deg), glm::vec3(0.0f, 1.0f, 0.0f)) * model;
 }
