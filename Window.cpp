@@ -206,12 +206,10 @@ void Window::mouseButtonCallback(GLFWwindow *window, int button, int action, int
                     dragging = true;
                     startDrag.z = glm::sqrt(z2);
                 }
-                std::cout << "Start draging" << std::endl;
             } else if (action == GLFW_RELEASE) {
                 dragging = false;
                 currentObj->getModel() = dragRot * currentObj->getModel();
                 dragRot = glm::mat4(1.0);
-                std::cout << "End draging" << std::endl;
             }
             break;
         default:
@@ -233,6 +231,5 @@ void Window::cursorPosCallback(GLFWwindow *window, double x, double y) {
 }
 
 void Window::scrollCallback(GLFWwindow *window, double xoffset, double yoffset) {
-    std::cout << yoffset << std::endl;
     currentObj->getModel() *= glm::scale(glm::vec3(glm::max(0.0f, 1 + 0.1f * float(yoffset))));
 }

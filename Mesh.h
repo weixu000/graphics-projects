@@ -20,7 +20,7 @@ class Mesh : public Object {
 private:
     std::vector<glm::vec3> points, normals;
     std::vector<glm::uvec3> face;
-    GLuint vao, vbo, ebo;
+    GLuint vao, vbo[2], ebo;
 public:
     explicit Mesh(const std::string &objFilename);
 
