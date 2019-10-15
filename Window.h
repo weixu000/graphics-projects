@@ -32,7 +32,8 @@ public:
     static glm::mat4 projection;
     static glm::mat4 view;
     static glm::vec3 eye, center, up;
-    static GLuint program, projectionLoc, viewLoc, modelLoc, colorLoc;
+
+    static Shader normalShader, phongShader, *curShader;
 
     static bool dragging;
     static glm::vec3 startDrag;

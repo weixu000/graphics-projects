@@ -21,12 +21,7 @@ glm::vec3 Window::up(0, 1, 0); // The up direction of the camera.
 // View matrix, defined by eye, center and up.
 glm::mat4 Window::view = glm::lookAt(Window::eye, Window::center, Window::up);
 
-GLuint Window::program; // The shader program id.
-
-GLuint Window::projectionLoc; // Location of projection in shader.
-GLuint Window::viewLoc; // Location of view in shader.
-GLuint Window::modelLoc; // Location of model in shader.
-GLuint Window::colorLoc; // Location of color in shader.
+Shader Window::normalShader, Window::phongShader, *Window::curShader;
 
 bool Window::dragging = false;
 glm::vec3 Window::startDrag;
@@ -34,22 +29,15 @@ glm::mat4 Window::dragRot(1.0f);
 
 
 bool Window::initializeProgram() {
-    // Create a shader program with a vertex shader and a fragment shader.
-    program = LoadShaders("shaders/shader.vert", "shaders/shader.frag");
-
-    // Check the shader program.
-    if (!program) {
+    try {
+        normalShader = Shader("shaders/normal_coloring.vert", "shaders/normal_coloring.frag");
+        phongShader = Shader("shaders/phong.vert", "shaders/phong.frag");
+    } catch (...) {
         std::cerr << "Failed to initialize shader program" << std::endl;
         return false;
     }
 
-    // Activate the shader program.
-    glUseProgram(program);
-    // Get the locations of uniform variables.
-    projectionLoc = glGetUniformLocation(program, "projection");
-    viewLoc = glGetUniformLocation(program, "view");
-    modelLoc = glGetUniformLocation(program, "model");
-    colorLoc = glGetUniformLocation(program, "color");
+    curShader = &phongShader;
 
     return true;
 }
@@ -70,9 +58,6 @@ void Window::cleanUp() {
     for (auto m:models) {
         delete m;
     }
-
-    // Delete the shader program.
-    glDeleteProgram(program);
 }
 
 GLFWwindow *Window::createWindow(int width, int height) {
@@ -154,14 +139,14 @@ void Window::displayCallback(GLFWwindow *window) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Specify the values of the uniform variables we are going to use.
-    glm::mat4 model = dragRot * currentObj->getModel();
-    glm::vec3 color = currentObj->getColor();
-    glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-    glUniform3fv(colorLoc, 1, glm::value_ptr(color));
+    auto model = dragRot * currentObj->getModel();
+    normalShader.setUniformMatrix4("projection", projection);
+    normalShader.setUniformMatrix4("view", view);
+    normalShader.setUniformMatrix4("model", model);
+
 
     // Render the object.
+    curShader->use();
     currentObj->draw();
 
     // Gets events, including input such as keyboard and mouse or window resizing.
@@ -186,6 +171,9 @@ void Window::keyCallback(GLFWwindow *window, int key, int scancode, int action, 
                 break;
             case GLFW_KEY_F3:
                 currentObj = models[2];
+                break;
+            case GLFW_KEY_N:
+                curShader = (curShader == &normalShader) ? &phongShader : &normalShader;
                 break;
             default:
                 break;
