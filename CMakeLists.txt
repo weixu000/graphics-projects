@@ -17,5 +17,7 @@ add_executable(Project2
         objects/Cube.cpp objects/Cube.h
         objects/PointCloud.cpp objects/PointCloud.h
         objects/Mesh.cpp objects/Mesh.h
-        Material.cpp Material.h)
+        Material.cpp Material.h
+        PointLight.cpp PointLight.h
+        Trackball.cpp Trackball.h)
 target_link_libraries(Project2 GLEW::glew_s GLFW3::GLFW3 glm)

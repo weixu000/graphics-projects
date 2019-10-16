@@ -22,9 +22,9 @@ glm::mat4 Window::view = glm::lookAt(Window::eye, Window::center, Window::up);
 
 Shader Window::normalShader, Window::phongShader, *Window::curShader;
 
-bool Window::dragging = false;
-glm::vec3 Window::startDrag;
-glm::mat4 Window::dragRot(1.0f);
+PointLight Window::light;
+
+Trackball Window::trackball;
 
 
 bool Window::initializeProgram() {
@@ -68,6 +68,11 @@ bool Window::initializeObjects() {
 
     // Set cube to be the first to display
     currentObj = models[0];
+
+    light.color = glm::vec3(20.0f);
+    light.ambient = glm::vec3(1.0f);
+    light.position = glm::vec3(15.0f);
+    light.attenuation = 0.5f;
 
     return true;
 }
@@ -158,13 +163,13 @@ void Window::displayCallback(GLFWwindow *window) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Specify the values of the uniform variables we are going to use.
-    auto model = dragRot * currentObj->getModel();
-
     curShader->use();
     curShader->setUniformMatrix4("projection", projection);
     curShader->setUniformMatrix4("view", view);
-    curShader->setUniformMatrix4("model", model);
+    curShader->setUniformMatrix4("model", currentObj->getModel());
     curShader->setUniform3f("viewPos", eye);
+
+    light.setUniform(*curShader);
 
     // Render the object.
     currentObj->draw(*curShader);
@@ -207,17 +212,9 @@ void Window::mouseButtonCallback(GLFWwindow *window, int button, int action, int
             if (action == GLFW_PRESS) {
                 double x, y;
                 glfwGetCursorPos(window, &x, &y);
-                startDrag.x = 2 * x / width - 1;
-                startDrag.y = -(2 * y / height - 1);
-                auto z2 = 1 - startDrag.x * startDrag.x - startDrag.y * startDrag.y;
-                if (z2 > 0) {
-                    dragging = true;
-                    startDrag.z = glm::sqrt(z2);
-                }
+                trackball.start(&currentObj->getModel(), x, y);
             } else if (action == GLFW_RELEASE) {
-                dragging = false;
-                currentObj->getModel() = dragRot * currentObj->getModel();
-                dragRot = glm::mat4(1.0);
+                trackball.stop();
             }
             break;
         default:
@@ -226,18 +223,9 @@ void Window::mouseButtonCallback(GLFWwindow *window, int button, int action, int
 }
 
 void Window::cursorPosCallback(GLFWwindow *window, double x, double y) {
-    if (dragging) {
-        glm::vec3 cur(2 * x / width - 1, -(2 * y / height - 1), 0);
-        auto z2 = 1 - cur.x * cur.x - cur.y * cur.y;
-        if (z2 > 0) {
-            cur.z = glm::sqrt(z2);
-            auto rad = glm::acos(glm::dot(startDrag, cur));
-            auto axis = glm::cross(startDrag, cur);
-            dragRot = glm::mat4_cast(glm::angleAxis(rad, axis));
-        }
-    }
+    trackball.move(x, y);
 }
 
 void Window::scrollCallback(GLFWwindow *window, double xoffset, double yoffset) {
-    currentObj->getModel() = glm::scale(glm::vec3(glm::max(0.0f, 1 + 0.1f * float(yoffset)))) * currentObj->getModel();
+    trackball.scale(&currentObj->getModel(), yoffset);
 }

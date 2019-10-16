@@ -21,6 +21,8 @@
 
 #include "objects/Mesh.h"
 #include "shaders/Shader.h"
+#include "PointLight.h"
+#include "Trackball.h"
 
 class Window {
 public:
@@ -35,9 +37,9 @@ public:
 
     static Shader normalShader, phongShader, *curShader;
 
-    static bool dragging;
-    static glm::vec3 startDrag;
-    static glm::mat4 dragRot;
+    static PointLight light;
+
+    static Trackball trackball;
 
     static bool initializeProgram();
 
