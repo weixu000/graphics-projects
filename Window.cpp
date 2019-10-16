@@ -239,5 +239,5 @@ void Window::cursorPosCallback(GLFWwindow *window, double x, double y) {
 }
 
 void Window::scrollCallback(GLFWwindow *window, double xoffset, double yoffset) {
-    currentObj->getModel() *= glm::scale(glm::vec3(glm::max(0.0f, 1 + 0.1f * float(yoffset))));
+    currentObj->getModel() = glm::scale(glm::vec3(glm::max(0.0f, 1 + 0.1f * float(yoffset)))) * currentObj->getModel();
 }
