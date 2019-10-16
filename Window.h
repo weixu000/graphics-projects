@@ -19,8 +19,8 @@
 #include <vector>
 #include <memory>
 
-#include "Mesh.h"
-#include "shader.h"
+#include "objects/Mesh.h"
+#include "shaders/Shader.h"
 
 class Window {
 public:

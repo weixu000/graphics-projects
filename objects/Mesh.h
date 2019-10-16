@@ -15,7 +15,7 @@
 #include <string>
 
 #include "Object.h"
-#include "Material.h"
+#include "../Material.h"
 
 class Mesh : public Object {
 private:

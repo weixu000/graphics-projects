@@ -1,5 +1,5 @@
 #include "Material.h"
-#include "shader.h"
+#include "shaders/Shader.h"
 
 void Material::setUniform(Shader &s) {
     s.setUniform3f("ks", ks);

@@ -11,11 +11,11 @@ find_package(GLM REQUIRED)
 
 add_executable(Project2
         main.cpp
-        shader.cpp shader.h
+        shaders/Shader.cpp shaders/Shader.h
         Window.cpp Window.h
-        Object.h
-        Cube.cpp Cube.h
-        PointCloud.cpp PointCloud.h
-        Mesh.cpp Mesh.h
+        objects/Object.h
+        objects/Cube.cpp objects/Cube.h
+        objects/PointCloud.cpp objects/PointCloud.h
+        objects/Mesh.cpp objects/Mesh.h
         Material.cpp Material.h)
 target_link_libraries(Project2 GLEW::glew_s GLFW3::GLFW3 glm)

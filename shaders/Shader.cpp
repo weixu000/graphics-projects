@@ -1,6 +1,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
-#include "shader.h"
+#include "Shader.h"
 
 enum ShaderType {
     vertex, fragment

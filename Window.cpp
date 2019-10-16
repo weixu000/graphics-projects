@@ -1,5 +1,4 @@
 #include "Window.h"
-#include "Mesh.h"
 
 int Window::width;
 int Window::height;

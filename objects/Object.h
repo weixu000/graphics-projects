@@ -13,7 +13,7 @@
 #include <glm/gtx/transform.hpp>
 #include <vector>
 
-#include "shader.h"
+class Shader;
 
 class Object {
 protected:
