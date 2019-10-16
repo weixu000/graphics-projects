@@ -42,7 +42,7 @@ public:
 
     void setUniform3f(const std::string &name, const glm::vec3 &v);
 
-    void Uniform1f(const std::string &name, const float f);
+    void setUniform1f(const std::string &name, const float f);
 
 
 private:

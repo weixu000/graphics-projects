@@ -7,10 +7,10 @@ int Window::height;
 const char *Window::windowTitle = "GLFW Starter Project";
 
 // Objects to display.
-Object *Window::models[3];
+Mesh *Window::models[3];
 
 // The object currently displaying.
-Object *Window::currentObj;
+Mesh *Window::currentObj;
 
 glm::mat4 Window::projection; // Projection matrix.
 
@@ -43,9 +43,29 @@ bool Window::initializeProgram() {
 }
 
 bool Window::initializeObjects() {
-    models[0] = new Mesh("meshes/bunny.obj");
-    models[1] = new Mesh("meshes/dragon.obj");
-    models[2] = new Mesh("meshes/bear.obj");
+    Material mat;
+
+    //shiny
+    mat.ks = glm::vec3(1.0f);
+    mat.kd = glm::vec3(0.0f);
+    mat.ka = glm::vec3(0.01f);
+    mat.alpha = 10.0f;
+    models[0] = new Mesh("meshes/bunny.obj", mat);
+
+    // diffuse
+    mat.ks = glm::vec3(0.0f);
+    mat.kd = glm::vec3(1.0f);
+    mat.ka = glm::vec3(0.01f);
+    mat.alpha = 10.0f;
+    models[1] = new Mesh("meshes/dragon.obj", mat);
+
+    // diffuse and shiny
+    mat.ks = glm::vec3(1.0f);
+    mat.kd = glm::vec3(1.0f);
+    mat.ka = glm::vec3(0.01f);
+    mat.alpha = 10.0f;
+    models[2] = new Mesh("meshes/bear.obj", mat);
+//    models[1] = models[2] = models[0];
 
     // Set cube to be the first to display
     currentObj = models[0];
@@ -140,14 +160,15 @@ void Window::displayCallback(GLFWwindow *window) {
 
     // Specify the values of the uniform variables we are going to use.
     auto model = dragRot * currentObj->getModel();
-    normalShader.setUniformMatrix4("projection", projection);
-    normalShader.setUniformMatrix4("view", view);
-    normalShader.setUniformMatrix4("model", model);
 
+    curShader->use();
+    curShader->setUniformMatrix4("projection", projection);
+    curShader->setUniformMatrix4("view", view);
+    curShader->setUniformMatrix4("model", model);
+    curShader->setUniform3f("viewPos", eye);
 
     // Render the object.
-    curShader->use();
-    currentObj->draw();
+    currentObj->draw(*curShader);
 
     // Gets events, including input such as keyboard and mouse or window resizing.
     glfwPollEvents();

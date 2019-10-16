@@ -79,7 +79,7 @@ PointCloud::~PointCloud() {
     glDeleteVertexArrays(1, &vao);
 }
 
-void PointCloud::draw() {
+void PointCloud::draw(Shader &) {
     // Bind to the VAO.
     glBindVertexArray(vao);
     // Set point size.

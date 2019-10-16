@@ -26,7 +26,7 @@ public:
 
     ~PointCloud();
 
-    void draw();
+    void draw(Shader &);
 
     void update();
 

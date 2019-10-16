@@ -136,13 +136,19 @@ Shader &Shader::operator=(Shader &&s) noexcept {
 }
 
 void Shader::setUniformMatrix4(const std::string &name, const glm::mat4 &m) {
-    glUniformMatrix4fv(uniformLocations[name], 1, GL_FALSE, glm::value_ptr(m));
+    if (uniformLocations.count(name)) {
+        glUniformMatrix4fv(uniformLocations.at(name), 1, GL_FALSE, glm::value_ptr(m));
+    }
 }
 
 void Shader::setUniform3f(const std::string &name, const glm::vec3 &v) {
-    glUniform3fv(uniformLocations[name], 1, glm::value_ptr(v));
+    if (uniformLocations.count(name)) {
+        glUniform3fv(uniformLocations.at(name), 1, glm::value_ptr(v));
+    }
 }
 
-void Shader::Uniform1f(const std::string &name, const float f) {
-    glUniform1f(uniformLocations[name], f);
+void Shader::setUniform1f(const std::string &name, const float f) {
+    if (uniformLocations.count(name)) {
+        glUniform1f(uniformLocations.at(name), f);
+    }
 }

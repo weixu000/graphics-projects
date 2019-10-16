@@ -23,5 +23,5 @@ void main()
 {
     // OpenGL maintains the D matrix so you only need to multiply by P, V (aka C inverse), and M
     gl_Position = projection * view * model * vec4(position, 1.0);
-    vertexColor = (normal + 1) / 2;
+    vertexColor = (normalize(transpose(inverse(mat3(model))) * normal) + 1) / 2;
 }

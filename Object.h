@@ -13,6 +13,8 @@
 #include <glm/gtx/transform.hpp>
 #include <vector>
 
+#include "shader.h"
+
 class Object {
 protected:
     glm::mat4 model;
@@ -22,7 +24,7 @@ public:
 
     glm::vec3 &getColor() { return color; }
 
-    virtual void draw() = 0;
+    virtual void draw(Shader &) = 0;
 
     virtual void update() = 0;
 };

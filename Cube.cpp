@@ -93,7 +93,7 @@ Cube::~Cube()
 	glDeleteVertexArrays(1, &vao);
 }
 
-void Cube::draw()
+void Cube::draw(Shader &)
 {
 	// Bind to the VAO.
 	glBindVertexArray(vao);

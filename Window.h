@@ -19,7 +19,7 @@
 #include <vector>
 #include <memory>
 
-#include "Object.h"
+#include "Mesh.h"
 #include "shader.h"
 
 class Window {
@@ -27,8 +27,8 @@ public:
     static int width;
     static int height;
     static const char *windowTitle;
-    static Object *models[3];
-    static Object *currentObj;
+    static Mesh *models[3];
+    static Mesh *currentObj;
     static glm::mat4 projection;
     static glm::mat4 view;
     static glm::vec3 eye, center, up;

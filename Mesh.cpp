@@ -4,7 +4,8 @@
 
 #include "Mesh.h"
 
-Mesh::Mesh(const std::string &objFilename) {
+Mesh::Mesh(const std::string &objFilename, const Material &m)
+        : mat(m) {
     loadOBJ(objFilename);
 
     /*
@@ -109,7 +110,8 @@ Mesh::~Mesh() {
     glDeleteVertexArrays(1, &vao);
 }
 
-void Mesh::draw() {
+void Mesh::draw(Shader &s) {
+    mat.setUniform(s);
     // Bind to the VAO.
     glBindVertexArray(vao);
     // Draw points

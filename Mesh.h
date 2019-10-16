@@ -15,18 +15,20 @@
 #include <string>
 
 #include "Object.h"
+#include "Material.h"
 
 class Mesh : public Object {
 private:
     std::vector<glm::vec3> points, normals;
     std::vector<glm::uvec3> face;
     GLuint vao, vbo[2], ebo;
+    Material mat;
 public:
-    explicit Mesh(const std::string &objFilename);
+    Mesh(const std::string &objFilename, const Material &m);
 
     ~Mesh();
 
-    void draw();
+    void draw(Shader &s);
 
     void update();
 

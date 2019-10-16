@@ -22,7 +22,7 @@ public:
 	Cube(float size);
 	~Cube();
 
-	void draw();
+    void draw(Shader &);
 	void update();
 
 	void spin(float deg);
