@@ -8,7 +8,6 @@
 Mesh::Mesh(const std::string &objFilename, const Material &m)
         : mat(m) {
     loadOBJ(objFilename);
-
     /*
      * Normalize the object to fit in the screen.
      */

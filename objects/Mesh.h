@@ -23,6 +23,9 @@ private:
     std::vector<glm::uvec3> face;
     GLuint vao, vbo[2], ebo;
     Material mat;
+
+    void loadOBJ(const std::string &objFilename);
+
 public:
     Mesh(const std::string &objFilename, const Material &m);
 
@@ -31,8 +34,6 @@ public:
     void draw(Shader &s);
 
     void update();
-
-    void loadOBJ(const std::string &objFilename);
 };
 
 

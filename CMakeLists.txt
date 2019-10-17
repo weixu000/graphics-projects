@@ -15,7 +15,6 @@ add_executable(Project2
         Window.cpp Window.h
         objects/Object.h
         objects/Cube.cpp objects/Cube.h
-        objects/PointCloud.cpp objects/PointCloud.h
         objects/Mesh.cpp objects/Mesh.h
         Material.cpp Material.h
         PointLight.cpp PointLight.h
