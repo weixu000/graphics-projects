@@ -24,6 +24,12 @@
 #include "PointLight.h"
 #include "Trackball.h"
 
+enum class Mode {
+    MODEL,
+    LIGHT,
+    MODEL_LIGHT
+};
+
 class Window {
 public:
     static int width;
@@ -40,6 +46,8 @@ public:
     static PointLight light;
 
     static Trackball trackball;
+
+    static Mode mode;
 
     static bool initializeProgram();
 

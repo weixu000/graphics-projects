@@ -26,6 +26,7 @@ PointLight Window::light;
 
 Trackball Window::trackball;
 
+Mode Window::mode = Mode::MODEL;
 
 bool Window::initializeProgram() {
     try {
@@ -200,6 +201,15 @@ void Window::keyCallback(GLFWwindow *window, int key, int scancode, int action, 
             case GLFW_KEY_N:
                 curShader = (curShader == &normalShader) ? &phongShader : &normalShader;
                 break;
+            case GLFW_KEY_1:
+                mode = Mode::MODEL;
+                break;
+            case GLFW_KEY_2:
+                mode = Mode::LIGHT;
+                break;
+            case GLFW_KEY_3:
+                mode = Mode::MODEL_LIGHT;
+                break;
             default:
                 break;
         }
@@ -223,9 +233,33 @@ void Window::mouseButtonCallback(GLFWwindow *window, int button, int action, int
 }
 
 void Window::cursorPosCallback(GLFWwindow *window, double x, double y) {
-    currentObj->getModel() = trackball.move(x, y) * currentObj->getModel();
+    auto delta = trackball.move(x, y);
+    switch (mode) {
+        case Mode::MODEL:
+            currentObj->getModel() = delta * currentObj->getModel();
+            break;
+        case Mode::LIGHT:
+            light.position = glm::mat3(delta) * light.position;
+            break;
+        case Mode::MODEL_LIGHT:
+            currentObj->getModel() = delta * currentObj->getModel();
+            light.position = glm::mat3(delta) * light.position;
+            break;
+    }
 }
 
 void Window::scrollCallback(GLFWwindow *window, double xoffset, double yoffset) {
-    currentObj->getModel() = trackball.scale(yoffset) * currentObj->getModel();
+    auto delta = Trackball::scale(yoffset);
+    switch (mode) {
+        case Mode::LIGHT:
+            light.position = glm::mat3(delta) * light.position;
+            break;
+        case Mode::MODEL:
+            currentObj->getModel() = delta * currentObj->getModel();
+            break;
+        case Mode::MODEL_LIGHT:
+            light.position = glm::mat3(delta) * light.position;
+            currentObj->getModel() = delta * currentObj->getModel();
+            break;
+    }
 }
