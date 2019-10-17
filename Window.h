@@ -19,7 +19,7 @@
 #include <vector>
 #include <memory>
 
-#include "objects/Mesh.h"
+#include "objects/Object.h"
 #include "shaders/Shader.h"
 #include "PointLight.h"
 #include "Trackball.h"
@@ -35,15 +35,15 @@ public:
     static int width;
     static int height;
     static const char *windowTitle;
-    static Mesh *models[3];
-    static Mesh *currentObj;
+    static Object *models[3];
+    static Object *currentObj;
     static glm::mat4 projection;
     static glm::mat4 view;
     static glm::vec3 eye, center, up;
 
     static Shader normalShader, phongShader, *curShader;
 
-    static PointLight light;
+    static PointLight *light;
 
     static Trackball trackball;
 

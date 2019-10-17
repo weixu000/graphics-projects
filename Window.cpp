@@ -6,10 +6,10 @@ int Window::height;
 const char *Window::windowTitle = "GLFW Starter Project";
 
 // Objects to display.
-Mesh *Window::models[3];
+Object *Window::models[3];
 
 // The object currently displaying.
-Mesh *Window::currentObj;
+Object *Window::currentObj;
 
 glm::mat4 Window::projection; // Projection matrix.
 
@@ -22,7 +22,7 @@ glm::mat4 Window::view = glm::lookAt(Window::eye, Window::center, Window::up);
 
 Shader Window::normalShader, Window::phongShader, *Window::curShader;
 
-PointLight Window::light;
+PointLight *Window::light;
 
 Trackball Window::trackball;
 
@@ -70,10 +70,11 @@ bool Window::initializeObjects() {
     // Set cube to be the first to display
     currentObj = models[0];
 
-    light.color = glm::vec3(20.0f);
-    light.ambient = glm::vec3(1.0f);
-    light.position = glm::vec3(15.0f);
-    light.attenuation = 0.5f;
+    light = new PointLight;
+    light->color = glm::vec3(1.0f);
+    light->ambient = glm::vec3(1.0f);
+    light->setPosition(glm::vec3(15.0f));
+    light->attenuation = 0.5f;
 
     return true;
 }
@@ -83,6 +84,8 @@ void Window::cleanUp() {
     for (auto m:models) {
         delete m;
     }
+
+    delete light;
 }
 
 GLFWwindow *Window::createWindow(int width, int height) {
@@ -169,7 +172,8 @@ void Window::displayCallback(GLFWwindow *window) {
     curShader->setUniformMatrix4("view", view);
     curShader->setUniform3f("viewPos", eye);
 
-    light.setUniform(*curShader);
+    light->setUniform(*curShader);
+    light->draw(*curShader);
 
     // Render the object.
     currentObj->draw(*curShader);
@@ -238,11 +242,11 @@ void Window::cursorPosCallback(GLFWwindow *window, double x, double y) {
             currentObj->getModel() = delta * currentObj->getModel();
             break;
         case Mode::LIGHT:
-            light.position = glm::mat3(delta) * light.position;
+            light->setPosition(glm::mat3(delta) * light->position());
             break;
         case Mode::MODEL_LIGHT:
             currentObj->getModel() = delta * currentObj->getModel();
-            light.position = glm::mat3(delta) * light.position;
+            light->setPosition(glm::mat3(delta) * light->position());
             break;
     }
 }
@@ -251,13 +255,13 @@ void Window::scrollCallback(GLFWwindow *window, double xoffset, double yoffset) 
     auto delta = Trackball::scale(yoffset);
     switch (mode) {
         case Mode::LIGHT:
-            light.position = glm::mat3(delta) * light.position;
+            light->setPosition(glm::mat3(delta) * light->position());
             break;
         case Mode::MODEL:
             currentObj->getModel() = delta * currentObj->getModel();
             break;
         case Mode::MODEL_LIGHT:
-            light.position = glm::mat3(delta) * light.position;
+            light->setPosition(glm::mat3(delta) * light->position());
             currentObj->getModel() = delta * currentObj->getModel();
             break;
     }
