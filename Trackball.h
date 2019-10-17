@@ -5,18 +5,20 @@
 
 class Trackball {
 public:
-    void start(glm::mat4 *m, float x, float y);
+    void start(float x, float y);
 
-    void move(float x, float y);
+    glm::mat4 move(float x, float y);
 
     void stop();
 
-    void scale(glm::mat4 *m, float offset);
+    static glm::mat4 scale(float offset);
 
 private:
-    glm::mat4 *mat = nullptr, origin;
-    glm::mat4 dragRot{1.0f};
-    glm::vec3 startDrag;
+    static glm::vec3 viewportToTrackball(float x, float y);
+
+    bool started = false;
+    glm::mat4 orientation{1.0f};
+    glm::vec3 initial;
 };
 
 

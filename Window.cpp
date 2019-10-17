@@ -212,7 +212,7 @@ void Window::mouseButtonCallback(GLFWwindow *window, int button, int action, int
             if (action == GLFW_PRESS) {
                 double x, y;
                 glfwGetCursorPos(window, &x, &y);
-                trackball.start(&currentObj->getModel(), x, y);
+                trackball.start(x, y);
             } else if (action == GLFW_RELEASE) {
                 trackball.stop();
             }
@@ -223,9 +223,9 @@ void Window::mouseButtonCallback(GLFWwindow *window, int button, int action, int
 }
 
 void Window::cursorPosCallback(GLFWwindow *window, double x, double y) {
-    trackball.move(x, y);
+    currentObj->getModel() = trackball.move(x, y) * currentObj->getModel();
 }
 
 void Window::scrollCallback(GLFWwindow *window, double xoffset, double yoffset) {
-    trackball.scale(&currentObj->getModel(), yoffset);
+    currentObj->getModel() = trackball.scale(yoffset) * currentObj->getModel();
 }
