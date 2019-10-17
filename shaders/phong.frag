@@ -23,8 +23,8 @@ void main()
     vec3 V = normalize(viewPos - vPos);
     vec3 R = 2 * dot(L, N) * N - L;
 
-    float d = length(lightPos - vPos) / length(lightPos);// normalize by current scale
-    //    float d = length(lightPos - vPos);
+    //    float d = length(lightPos - vPos) / length(lightPos);// normalize by current scale
+    float d = length(lightPos - vPos);
     vec3 lc = lightColor / (attenuation * d);
 
     fragColor = vec4(ka * ambientColor
