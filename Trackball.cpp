@@ -11,6 +11,9 @@ glm::mat4 Trackball::move(float x, float y) {
         auto cur = viewportToTrackball(x, y);
         auto rad = glm::acos(glm::dot(initial, cur));
         auto axis = glm::cross(initial, cur);
+        if (glm::length(axis) == 0) {
+            return glm::mat4(1.0f); // avoid NaN
+        }
         auto next = glm::rotate(rad, axis);
         auto delta = next * glm::transpose(orientation);
         orientation = next;

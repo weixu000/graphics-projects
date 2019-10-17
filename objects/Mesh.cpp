@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "Mesh.h"
+#include "../shaders/Shader.h"
 
 Mesh::Mesh(const std::string &objFilename, const Material &m)
         : mat(m) {
@@ -112,6 +113,7 @@ Mesh::~Mesh() {
 
 void Mesh::draw(Shader &s) {
     mat.setUniform(s);
+    s.setUniformMatrix4("model", model);
     // Bind to the VAO.
     glBindVertexArray(vao);
     // Draw points

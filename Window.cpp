@@ -167,7 +167,6 @@ void Window::displayCallback(GLFWwindow *window) {
     curShader->use();
     curShader->setUniformMatrix4("projection", projection);
     curShader->setUniformMatrix4("view", view);
-    curShader->setUniformMatrix4("model", currentObj->getModel());
     curShader->setUniform3f("viewPos", eye);
 
     light.setUniform(*curShader);
