@@ -5,7 +5,7 @@ PointLight::PointLight() {
     Material mat;
     mat.ks = glm::vec3(0.0f);
     mat.kd = glm::vec3(0.0f);
-    mat.ka = glm::vec3(1.0f);
+    mat.ka = glm::vec3(0.005f);
     mat.alpha = 1.0f;
 
     mesh = std::make_unique<Mesh>("meshes/sphere.obj", mat);

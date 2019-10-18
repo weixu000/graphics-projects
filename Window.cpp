@@ -46,24 +46,24 @@ bool Window::initializeObjects() {
     Material mat;
 
     //shiny
-    mat.ks = glm::vec3(1.0f);
+    mat.ks = glm::vec3(0.727811f, 0.626959f, 0.626959f);
     mat.kd = glm::vec3(0.0f);
-    mat.ka = glm::vec3(0.01f);
-    mat.alpha = 10.0f;
+    mat.ka = glm::vec3(0.1745f, 0.01175f, 0.01175f);
+    mat.alpha = 0.6f * 128;
     models[0] = new Mesh("meshes/bunny.obj", mat);
 
     // diffuse
     mat.ks = glm::vec3(0.0f);
-    mat.kd = glm::vec3(1.0f);
-    mat.ka = glm::vec3(0.01f);
-    mat.alpha = 10.0f;
+    mat.kd = glm::vec3(0.7038f, 0.27048f, 0.0828f);
+    mat.ka = glm::vec3(0.19125f, 0.0735f, 0.0225);
+    mat.alpha = 1.0f;
     models[1] = new Mesh("meshes/dragon.obj", mat);
 
     // diffuse and shiny
-    mat.ks = glm::vec3(1.0f);
-    mat.kd = glm::vec3(1.0f);
-    mat.ka = glm::vec3(0.01f);
-    mat.alpha = 10.0f;
+    mat.ks = glm::vec3(0.633f, 0.727811f, 0.633f);
+    mat.kd = glm::vec3(0.07568f, 0.61424f, 0.07568f);
+    mat.ka = glm::vec3(0.0215f, 0.1745f, 0.0215f);
+    mat.alpha = 0.6f * 128;
     models[2] = new Mesh("meshes/bear.obj", mat);
 //    models[1] = models[2] = models[0];
 
@@ -71,9 +71,9 @@ bool Window::initializeObjects() {
     currentObj = models[0];
 
     light = new PointLight;
-    light->color = glm::vec3(0.0f, 0.6f, 0.6f) * 15.0f;
-    light->setPosition(glm::vec3(15.0f));
-    light->attenuation = 0.5f;
+    light->color = glm::vec3(0.3f, 0.6f, 0.6f) * 20.0f;
+    light->setPosition(glm::vec3(10.0f));
+    light->attenuation = 1.0f;
 
     return true;
 }
