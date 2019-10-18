@@ -147,14 +147,16 @@ void Window::resizeCallback(GLFWwindow *window, int width, int height) {
     // In case your Mac has a retina display.
     glfwGetFramebufferSize(window, &width, &height);
 #endif
-    Window::width = width;
-    Window::height = height;
-    // Set the viewport size.
-    glViewport(0, 0, width, height);
+    if (width && height) {
+        Window::width = width;
+        Window::height = height;
+        // Set the viewport size.
+        glViewport(0, 0, width, height);
 
-    // Set the projection matrix.
-    Window::projection = glm::perspective(glm::radians(60.0),
-                                          double(width) / (double) height, 1.0, 1000.0);
+        // Set the projection matrix.
+        Window::projection = glm::perspective(glm::radians(60.0f),
+                                              float(width) / float(height), 1.0f, 1000.0f);
+    }
 }
 
 void Window::idleCallback() {
