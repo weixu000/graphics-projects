@@ -5,7 +5,7 @@ in vec3 vNormal, vPos;
 uniform vec3 ks, kd, ka;
 uniform float alpha;
 
-uniform vec3 lightPos, lightColor, ambientColor;
+uniform vec3 lightPos, lightColor;
 uniform float attenuation;
 
 uniform vec3 viewPos;
@@ -27,7 +27,7 @@ void main()
     float d = length(lightPos - vPos);
     vec3 lc = lightColor / (attenuation * d);
 
-    fragColor = vec4(ka * ambientColor
+    fragColor = vec4(ka * lc
     + kd * lc * cosP(L, N)
     + ks * lc * pow(cosP(R, V), alpha),
     1.0f);

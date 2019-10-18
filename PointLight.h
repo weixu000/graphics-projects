@@ -10,7 +10,7 @@ class Shader;
 
 class PointLight {
 public:
-    glm::vec3 color, ambient;
+    glm::vec3 color;
     float attenuation;
 
     PointLight();

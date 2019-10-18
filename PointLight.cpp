@@ -20,7 +20,6 @@ void PointLight::setPosition(const glm::vec3 &p) {
 void PointLight::setUniform(Shader &s) {
     s.setUniform3f("lightPos", _position);
     s.setUniform3f("lightColor", color);
-    s.setUniform3f("ambientColor", ambient);
     s.setUniform1f("attenuation", attenuation);
 }
 
