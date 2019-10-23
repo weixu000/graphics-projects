@@ -2,36 +2,19 @@
 #define GLFW_INCLUDE_GLCOREARB
 #include <OpenGL/gl3.h>
 #else
-
 #include <GL/glew.h>
-
 #endif
 
 #include <GLFW/glfw3.h>
+#include <cstdlib>
 
-#include <stdlib.h>
-#include <stdio.h>
 #include "Window.h"
 
 
 void error_callback(int error, const char *description) {
     // Print error.
     std::cerr << description << std::endl;
-}
-
-void setup_callbacks(GLFWwindow *window) {
-    // Set the error callback.
-    glfwSetErrorCallback(error_callback);
-    // Set the key callback.
-    glfwSetKeyCallback(window, Window::keyCallback);
-    // Set the window resize callback.
-    glfwSetWindowSizeCallback(window, Window::resizeCallback);
-    // Set the mouse button callback.
-    glfwSetMouseButtonCallback(window, Window::mouseButtonCallback);
-    // Set the cursor position callback.
-    glfwSetCursorPosCallback(window, Window::cursorPosCallback);
-    // Set the scroll callback.
-    glfwSetScrollCallback(window, Window::scrollCallback);
+    exit(EXIT_FAILURE);
 }
 
 void setup_opengl_settings() {
@@ -58,36 +41,41 @@ void print_versions() {
 #endif
 }
 
-int main(void) {
-    // Create the GLFW window.
-    GLFWwindow *window = Window::createWindow(640, 480);
-    if (!window) exit(EXIT_FAILURE);
-
-    // Print OpenGL and GLSL versions.
-    print_versions();
-    // Setup callbacks.
-    setup_callbacks(window);
-    // Setup OpenGL settings.
-    setup_opengl_settings();
-    // Initialize the shader program; exit if initialization fails.
-    if (!Window::initializeProgram()) exit(EXIT_FAILURE);
-    // Initialize objects/pointers for rendering; exit if initialization fails.
-    if (!Window::initializeObjects()) exit(EXIT_FAILURE);
-
-    // Loop while GLFW window should stay open.
-    while (!glfwWindowShouldClose(window)) {
-        // Main render display callback. Rendering of objects is done here.
-        Window::displayCallback(window);
-
-        // Idle callback. Updating objects, etc. can be done here.
-        Window::idleCallback();
+void setup_glfw() {
+    // Initialize GLFW.
+    if (!glfwInit()) {
+        std::cerr << "Failed to initialize GLFW" << std::endl;
+        exit(EXIT_FAILURE);
     }
 
-    Window::cleanUp();
-    // Destroy the window.
-    glfwDestroyWindow(window);
-    // Terminate GLFW.
-    glfwTerminate();
+#ifdef __APPLE__
+    // Apple implements its own version of OpenGL and requires special treatments
+    // to make it uses modern OpenGL.
 
-    exit(EXIT_SUCCESS);
+    // Ensure that minimum OpenGL version is 3.3
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    // Enable forward compatibility and allow a modern OpenGL context
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+}
+
+int main(void) {
+    setup_glfw();
+    // Setup callbacks.
+    glfwSetErrorCallback(error_callback);
+
+    Window window;
+    // Print OpenGL and GLSL versions.
+    print_versions();
+    // Setup OpenGL settings.
+    setup_opengl_settings();
+    // Loop while GLFW window should stay open.
+    while (!glfwWindowShouldClose(window.window)) {
+        // Main render display callback. Rendering of objects is done here.
+        window.displayCallback();
+        // Idle callback. Updating objects, etc. can be done here.
+        window.idleCallback();
+    }
 }

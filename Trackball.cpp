@@ -1,5 +1,6 @@
+#include <glm/gtx/transform.hpp>
+
 #include "Trackball.h"
-#include "Window.h"
 
 void Trackball::start(float x, float y) {
     initial = viewportToTrackball(x, y);
@@ -33,8 +34,8 @@ glm::mat4 Trackball::scale(float offset) {
 }
 
 glm::vec3 Trackball::viewportToTrackball(float x, float y) {
-    glm::vec3 ret(2 * x / Window::width - 1,
-                  -(2 * y / Window::height - 1),
+    glm::vec3 ret(2 * x - 1,
+                  -(2 * y - 1),
                   0.0f);
     auto z2 = 1 - ret.x * ret.x - ret.y * ret.y;
     if (z2 >= 0) {

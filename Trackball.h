@@ -5,8 +5,10 @@
 
 class Trackball {
 public:
+    // x,y should be normalized
     void start(float x, float y);
 
+    // x,y should be normalized
     glm::mat4 move(float x, float y);
 
     void stop();

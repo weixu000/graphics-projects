@@ -1,48 +1,59 @@
+#include <glm/gtc/type_ptr.hpp>
+#include <iostream>
+#include <vector>
+
 #include "Window.h"
 
-int Window::width;
-int Window::height;
+Window::Window() {
+    // Create the GLFW window.
+    createWindow(640, 480);
+    setupCallbacks();
+    initializeProgram();
+    initializeObjects();
+}
 
-const char *Window::windowTitle = "GLFW Starter Project";
+void Window::setupCallbacks() {
+    // Set the key callback.
+    glfwSetKeyCallback(window,
+                       [](GLFWwindow *window, int key, int scancode, int action, int mods) {
+                           retrieve(window)->keyCallback(key, scancode, action, mods);
+                       });
+    // Set the window resize callback.
+    glfwSetWindowSizeCallback(window,
+                              [](GLFWwindow *window, int width, int height) {
+                                  retrieve(window)->resizeCallback(width, height);
+                              });
+    // Set the mouse button callback.
+    glfwSetMouseButtonCallback(window,
+                               [](GLFWwindow *window, int button, int action, int mods) {
+                                   retrieve(window)->mouseButtonCallback(button, action, mods);
+                               });
+    // Set the cursor position callback.
+    glfwSetCursorPosCallback(window,
+                             [](GLFWwindow *window, double x, double y) {
+                                 retrieve(window)->cursorPosCallback(x, y);
+                             });
 
-// Objects to display.
-Object *Window::models[3];
+    // Set the scroll callback.
+    glfwSetScrollCallback(window,
+                          [](GLFWwindow *window, double xoffset, double yoffset) {
+                              retrieve(window)->scrollCallback(xoffset, yoffset);
+                          });
+}
 
-// The object currently displaying.
-Object *Window::currentObj;
-
-glm::mat4 Window::projection; // Projection matrix.
-
-glm::vec3 Window::eye(0, 0, 20); // Camera position.
-glm::vec3 Window::center(0, 0, 0); // The point we are looking at.
-glm::vec3 Window::up(0, 1, 0); // The up direction of the camera.
-
-// View matrix, defined by eye, center and up.
-glm::mat4 Window::view = glm::lookAt(Window::eye, Window::center, Window::up);
-
-Shader Window::normalShader, Window::phongShader, *Window::curShader;
-
-PointLight *Window::light;
-
-Trackball Window::trackball;
-
-Mode Window::mode = Mode::MODEL;
-
-bool Window::initializeProgram() {
+void Window::initializeProgram() {
     try {
         normalShader = Shader("shaders/normal_coloring.vert", "shaders/normal_coloring.frag");
         phongShader = Shader("shaders/phong.vert", "shaders/phong.frag");
     } catch (...) {
         std::cerr << "Failed to initialize shader program" << std::endl;
-        return false;
+        exit(EXIT_FAILURE);
     }
 
     curShader = &phongShader;
-
-    return true;
 }
 
-bool Window::initializeObjects() {
+void Window::initializeObjects() {
     Material mat;
 
     //shiny
@@ -74,61 +85,41 @@ bool Window::initializeObjects() {
     light->color = glm::vec3(0.3f, 0.6f, 0.6f) * 30.0f;
     light->setPosition(glm::vec3(10.0f));
     light->attenuation = 1.0f;
-
-    return true;
 }
 
-void Window::cleanUp() {
+Window::~Window() {
     // Deallcoate the objects.
     for (auto m:models) {
         delete m;
     }
 
     delete light;
+    glfwDestroyWindow(window);
 }
 
-GLFWwindow *Window::createWindow(int width, int height) {
-    // Initialize GLFW.
-    if (!glfwInit()) {
-        std::cerr << "Failed to initialize GLFW" << std::endl;
-        return NULL;
-    }
-
+void Window::createWindow(int width, int height) {
     // 4x antialiasing.
     glfwWindowHint(GLFW_SAMPLES, 4);
 
-#ifdef __APPLE__
-    // Apple implements its own version of OpenGL and requires special treatments
-    // to make it uses modern OpenGL.
-
-    // Ensure that minimum OpenGL version is 3.3
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    // Enable forward compatibility and allow a modern OpenGL context
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-
     // Create the GLFW window.
-    GLFWwindow *window = glfwCreateWindow(width, height, windowTitle, NULL, NULL);
-
+    window = glfwCreateWindow(width, height, windowTitle, NULL, NULL);
     // Check if the window could not be created.
     if (!window) {
         std::cerr << "Failed to open GLFW window." << std::endl;
         glfwTerminate();
-        return NULL;
+        exit(EXIT_FAILURE);
     }
+
+    glfwSetWindowUserPointer(window, this);
 
     // Make the context of the window.
     glfwMakeContextCurrent(window);
-
 #ifndef __APPLE__
     // On Windows and Linux, we need GLEW to provide modern OpenGL functionality.
-
     // Initialize GLEW.
     if (glewInit()) {
         std::cerr << "Failed to initialize GLEW" << std::endl;
-        return NULL;
+        exit(EXIT_FAILURE);
     }
 #endif
 
@@ -136,12 +127,10 @@ GLFWwindow *Window::createWindow(int width, int height) {
     glfwSwapInterval(0);
 
     // Call the resize callback to make sure things get drawn immediately.
-    Window::resizeCallback(window, width, height);
-
-    return window;
+    resizeCallback(width, height);
 }
 
-void Window::resizeCallback(GLFWwindow *window, int width, int height) {
+void Window::resizeCallback(int width, int height) {
 #ifdef __APPLE__
     // In case your Mac has a retina display.
     glfwGetFramebufferSize(window, &width, &height);
@@ -163,7 +152,7 @@ void Window::idleCallback() {
     currentObj->update();
 }
 
-void Window::displayCallback(GLFWwindow *window) {
+void Window::displayCallback() {
     // Clear the color and depth buffers.
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -185,7 +174,7 @@ void Window::displayCallback(GLFWwindow *window) {
     glfwSwapBuffers(window);
 }
 
-void Window::keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+void Window::keyCallback(int key, int scancode, int action, int mods) {
     // Check for a key press.
     if (action == GLFW_PRESS) {
         switch (key) {
@@ -220,13 +209,13 @@ void Window::keyCallback(GLFWwindow *window, int key, int scancode, int action, 
     }
 }
 
-void Window::mouseButtonCallback(GLFWwindow *window, int button, int action, int mods) {
+void Window::mouseButtonCallback(int button, int action, int mods) {
     switch (button) {
         case GLFW_MOUSE_BUTTON_LEFT:
             if (action == GLFW_PRESS) {
                 double x, y;
                 glfwGetCursorPos(window, &x, &y);
-                trackball.start(x, y);
+                trackball.start(x / Window::width, y / Window::height);
             } else if (action == GLFW_RELEASE) {
                 trackball.stop();
             }
@@ -236,8 +225,8 @@ void Window::mouseButtonCallback(GLFWwindow *window, int button, int action, int
     }
 }
 
-void Window::cursorPosCallback(GLFWwindow *window, double x, double y) {
-    auto delta = trackball.move(x, y);
+void Window::cursorPosCallback(double x, double y) {
+    auto delta = trackball.move(x / Window::width, y / Window::height);
     switch (mode) {
         case Mode::MODEL:
             currentObj->getModel() = delta * currentObj->getModel();
@@ -252,7 +241,7 @@ void Window::cursorPosCallback(GLFWwindow *window, double x, double y) {
     }
 }
 
-void Window::scrollCallback(GLFWwindow *window, double xoffset, double yoffset) {
+void Window::scrollCallback(double xoffset, double yoffset) {
     auto delta = Trackball::scale(yoffset);
     switch (mode) {
         case Mode::LIGHT:

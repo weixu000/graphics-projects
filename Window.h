@@ -11,13 +11,7 @@
 #endif
 
 #include <GLFW/glfw3.h>
-
 #include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <iostream>
-#include <vector>
-#include <memory>
 
 #include "objects/Object.h"
 #include "shaders/Shader.h"
@@ -32,44 +26,52 @@ enum class Mode {
 
 class Window {
 public:
-    static int width;
-    static int height;
-    static const char *windowTitle;
-    static Object *models[3];
-    static Object *currentObj;
-    static glm::mat4 projection;
-    static glm::mat4 view;
-    static glm::vec3 eye, center, up;
+    int width, height;
+    const char *windowTitle = "GLFW Starter Project";
+    Object *models[3], *currentObj;
 
-    static Shader normalShader, phongShader, *curShader;
+    glm::vec3 eye{0, 0, 20}, center{0, 0, 0}, up{0, 1, 0};
+    glm::mat4 projection = glm::perspective(glm::radians(60.0f),
+                                            float(width) / float(height), 1.0f, 1000.0f),
+            view = glm::lookAt(Window::eye, Window::center, Window::up);
 
-    static PointLight *light;
+    Shader normalShader, phongShader, *curShader;
 
-    static Trackball trackball;
+    PointLight *light;
 
-    static Mode mode;
+    Trackball trackball;
 
-    static bool initializeProgram();
+    Mode mode = Mode::MODEL;
 
-    static bool initializeObjects();
+    GLFWwindow *window;
 
-    static void cleanUp();
+    static Window *retrieve(GLFWwindow *w) { return reinterpret_cast<Window *>(glfwGetWindowUserPointer(w)); }
 
-    static GLFWwindow *createWindow(int width, int height);
+    Window();
 
-    static void resizeCallback(GLFWwindow *window, int width, int height);
+    virtual ~Window();
 
-    static void idleCallback();
+    void setupCallbacks();
 
-    static void displayCallback(GLFWwindow *);
+    void initializeProgram();
 
-    static void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
+    void initializeObjects();
 
-    static void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
+    void createWindow(int width, int height);
 
-    static void cursorPosCallback(GLFWwindow *window, double x, double y);
+    void resizeCallback(int width, int height);
 
-    static void scrollCallback(GLFWwindow *window, double xoffset, double yoffset);
+    void idleCallback();
+
+    void displayCallback();
+
+    void keyCallback(int key, int scancode, int action, int mods);
+
+    void mouseButtonCallback(int button, int action, int mods);
+
+    void cursorPosCallback(double x, double y);
+
+    void scrollCallback(double xoffset, double yoffset);
 };
 
 #endif
