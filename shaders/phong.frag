@@ -19,11 +19,10 @@ float cosP(vec3 x, vec3 y){
 void main()
 {
     vec3 L = normalize(lightPos - vPos);
-    vec3 N = vNormal;
+    vec3 N = normalize(vNormal);
     vec3 V = normalize(viewPos - vPos);
     vec3 R = 2 * dot(L, N) * N - L;
 
-    //    float d = length(lightPos - vPos) / length(lightPos);// normalize by current scale
     float d = length(lightPos - vPos);
     vec3 lc = lightColor / (attenuation * d);
 

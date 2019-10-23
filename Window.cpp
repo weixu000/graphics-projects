@@ -71,7 +71,7 @@ bool Window::initializeObjects() {
     currentObj = models[0];
 
     light = new PointLight;
-    light->color = glm::vec3(0.3f, 0.6f, 0.6f) * 20.0f;
+    light->color = glm::vec3(0.3f, 0.6f, 0.6f) * 30.0f;
     light->setPosition(glm::vec3(10.0f));
     light->attenuation = 1.0f;
 
