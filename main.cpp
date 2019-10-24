@@ -2,7 +2,9 @@
 #define GLFW_INCLUDE_GLCOREARB
 #include <OpenGL/gl3.h>
 #else
+
 #include <GL/glew.h>
+
 #endif
 
 #include <GLFW/glfw3.h>
@@ -28,19 +30,6 @@ void setup_opengl_settings() {
     glClearColor(0.0, 0.0, 0.0, 0.0);
 }
 
-void print_versions() {
-    // Get info of GPU and supported OpenGL version.
-    std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
-    std::cout << "OpenGL version supported: " << glGetString(GL_VERSION)
-              << std::endl;
-
-    //If the shading language symbol is defined.
-#ifdef GL_SHADING_LANGUAGE_VERSION
-    std::cout << "Supported GLSL version is: " <<
-              glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-#endif
-}
-
 void setup_glfw() {
     // Initialize GLFW.
     if (!glfwInit()) {
@@ -59,16 +48,15 @@ void setup_glfw() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
+
+    // Setup error callback.
+    glfwSetErrorCallback(error_callback);
 }
 
 int main(void) {
     setup_glfw();
-    // Setup callbacks.
-    glfwSetErrorCallback(error_callback);
 
     Window window;
-    // Print OpenGL and GLSL versions.
-    print_versions();
     // Setup OpenGL settings.
     setup_opengl_settings();
     // Loop while GLFW window should stay open.

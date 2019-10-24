@@ -4,12 +4,58 @@
 
 #include "Window.h"
 
-Window::Window() {
+OpenGLContext::OpenGLContext() {
+    // 4x antialiasing.
+    glfwWindowHint(GLFW_SAMPLES, 4);
+
     // Create the GLFW window.
-    createWindow(640, 480);
+    window = glfwCreateWindow(width, height, windowTitle, NULL, NULL);
+    // Check if the window could not be created.
+    if (!window) {
+        std::cerr << "Failed to open GLFW window." << std::endl;
+        glfwTerminate();
+        exit(EXIT_FAILURE);
+    }
+
+    glfwSetWindowUserPointer(window, this);
+
+    // Make the context of the window.
+    glfwMakeContextCurrent(window);
+#ifndef __APPLE__
+    // On Windows and Linux, we need GLEW to provide modern OpenGL functionality.
+    // Initialize GLEW.
+    if (glewInit()) {
+        std::cerr << "Failed to initialize GLEW" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+#endif
+    // Get info of GPU and supported OpenGL version.
+    std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
+    std::cout << "OpenGL version supported: " << glGetString(GL_VERSION)
+              << std::endl;
+
+    //If the shading language symbol is defined.
+#ifdef GL_SHADING_LANGUAGE_VERSION
+    std::cout << "Supported GLSL version is: " <<
+              glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+#endif
+
+    // Set swap interval to 1.
+    glfwSwapInterval(0);
+}
+
+OpenGLContext::~OpenGLContext() {
+    glfwDestroyWindow(window);
+}
+
+Window::Window() {
     setupCallbacks();
     initializeProgram();
     initializeObjects();
+
+    // Initial size will not fire callback
+    // force to fire
+    resizeCallback(width, height);
 }
 
 void Window::setupCallbacks() {
@@ -94,40 +140,6 @@ Window::~Window() {
     }
 
     delete light;
-    glfwDestroyWindow(window);
-}
-
-void Window::createWindow(int width, int height) {
-    // 4x antialiasing.
-    glfwWindowHint(GLFW_SAMPLES, 4);
-
-    // Create the GLFW window.
-    window = glfwCreateWindow(width, height, windowTitle, NULL, NULL);
-    // Check if the window could not be created.
-    if (!window) {
-        std::cerr << "Failed to open GLFW window." << std::endl;
-        glfwTerminate();
-        exit(EXIT_FAILURE);
-    }
-
-    glfwSetWindowUserPointer(window, this);
-
-    // Make the context of the window.
-    glfwMakeContextCurrent(window);
-#ifndef __APPLE__
-    // On Windows and Linux, we need GLEW to provide modern OpenGL functionality.
-    // Initialize GLEW.
-    if (glewInit()) {
-        std::cerr << "Failed to initialize GLEW" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-#endif
-
-    // Set swap interval to 1.
-    glfwSwapInterval(0);
-
-    // Call the resize callback to make sure things get drawn immediately.
-    resizeCallback(width, height);
 }
 
 void Window::resizeCallback(int width, int height) {
@@ -136,14 +148,14 @@ void Window::resizeCallback(int width, int height) {
     glfwGetFramebufferSize(window, &width, &height);
 #endif
     if (width && height) {
-        Window::width = width;
-        Window::height = height;
+        this->width = width;
+        this->height = height;
         // Set the viewport size.
         glViewport(0, 0, width, height);
 
         // Set the projection matrix.
-        Window::projection = glm::perspective(glm::radians(60.0f),
-                                              float(width) / float(height), 1.0f, 1000.0f);
+        projection = glm::perspective(glm::radians(60.0f),
+                                      float(width) / float(height), 1.0f, 1000.0f);
     }
 }
 

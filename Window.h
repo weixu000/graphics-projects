@@ -18,22 +18,35 @@
 #include "PointLight.h"
 #include "Trackball.h"
 
-enum class Mode {
-    MODEL,
-    LIGHT,
-    MODEL_LIGHT
+// Make sure OpenGL context is ready before anything else, since it is base class
+class OpenGLContext {
+public:
+    GLFWwindow *window;
+
+    int width = 640, height = 480;
+    const char *windowTitle = "GLFW Starter Project";
+
+    OpenGLContext();
+
+    virtual ~OpenGLContext();
+
+    OpenGLContext(const OpenGLContext &) = delete;
+
+    OpenGLContext(OpenGLContext &&) = delete;
+
+    OpenGLContext &operator=(const OpenGLContext &) = delete;
+
+    OpenGLContext &operator=(OpenGLContext &&) = delete;
 };
 
-class Window {
+class Window : public OpenGLContext {
 public:
-    int width, height;
-    const char *windowTitle = "GLFW Starter Project";
-    Object *models[3], *currentObj;
-
     glm::vec3 eye{0, 0, 20}, center{0, 0, 0}, up{0, 1, 0};
     glm::mat4 projection = glm::perspective(glm::radians(60.0f),
                                             float(width) / float(height), 1.0f, 1000.0f),
             view = glm::lookAt(Window::eye, Window::center, Window::up);
+
+    Object *models[3], *currentObj;
 
     Shader normalShader, phongShader, *curShader;
 
@@ -41,9 +54,13 @@ public:
 
     Trackball trackball;
 
-    Mode mode = Mode::MODEL;
+    enum class Mode {
+        MODEL,
+        LIGHT,
+        MODEL_LIGHT
+    };
 
-    GLFWwindow *window;
+    Mode mode = Mode::MODEL;
 
     static Window *retrieve(GLFWwindow *w) { return reinterpret_cast<Window *>(glfwGetWindowUserPointer(w)); }
 
@@ -56,8 +73,6 @@ public:
     void initializeProgram();
 
     void initializeObjects();
-
-    void createWindow(int width, int height);
 
     void resizeCallback(int width, int height);
 
