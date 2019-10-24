@@ -8,27 +8,8 @@
 Mesh::Mesh(const std::string &objFilename, const Material &m)
         : mat(m) {
     loadOBJ(objFilename);
-    /*
-     * Normalize the object to fit in the screen.
-     */
-    glm::vec3 minVal = points[0], maxVal = points[0];
-    for (auto &p:points) {
-        minVal = glm::min(minVal, p);
-        maxVal = glm::max(maxVal, p);
-    }
-    glm::vec3 center = (maxVal + minVal) / 2.0f;
 
-    float scale = 0.0f;
-    for (auto &p:points) {
-        scale = glm::max(glm::length(p - center), scale);
-    }
-
-    model = glm::mat4(1);
-    model = glm::scale(model, glm::vec3(11.5 / scale));
-    model = glm::translate(model, -center);
-
-    // Set the color.
-    color = glm::vec3(1, 0, 0);
+    computeStatistics();
 
     // Generate VAO, VBO, EBO.
     glGenVertexArrays(1, &vao);
@@ -64,8 +45,8 @@ Mesh::Mesh(const std::string &objFilename, const Material &m)
     // Bind to the EBO.
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     // Pass in the data.
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(glm::uvec3) * face.size(),
-                 face.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(glm::uvec3) * indices.size(),
+                 indices.data(), GL_STATIC_DRAW);
 
     // Unbind from the VAO.
     glBindVertexArray(0);
@@ -93,7 +74,7 @@ void Mesh::loadOBJ(const std::string &objFilename) {
                 ss >> f.x >> delim >> delim >> f.x
                    >> f.y >> delim >> delim >> f.y
                    >> f.z >> delim >> delim >> f.z;
-                face.push_back(f - 1U);
+                indices.push_back(f - 1U);
             }
         }
         std::cout << objFilename << " " << points.size() << std::endl;
@@ -110,17 +91,34 @@ Mesh::~Mesh() {
     glDeleteVertexArrays(1, &vao);
 }
 
-void Mesh::draw(Shader &s) {
-    mat.setUniform(s);
-    s.setUniformMatrix4("model", model);
+void Mesh::draw(const glm::mat4 &world) {
+    mat.setUniform(*shader);
+    shader->setUniformMatrix4("model", world);
     // Bind to the VAO.
     glBindVertexArray(vao);
     // Draw points
-    glDrawElements(GL_TRIANGLES, 3 * face.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, 3 * indices.size(), GL_UNSIGNED_INT, 0);
     // Unbind from the VAO.
     glBindVertexArray(0);
 }
 
-void Mesh::update() {
-    // Spin the cube by 1 degree.
+glm::mat4 Mesh::normalizeMat() const {
+    glm::mat4 model{1.0f};
+    model = glm::scale(model, glm::vec3(11.5 / _scale));
+    model = glm::translate(model, -_center);
+    return model;
+}
+
+void Mesh::computeStatistics() {
+    minVal = points[0], maxVal = points[0];
+    for (auto &p:points) {
+        minVal = glm::min(minVal, p);
+        maxVal = glm::max(maxVal, p);
+    }
+    _center = (maxVal + minVal) / 2.0f;
+
+    _scale = 0.0f;
+    for (auto &p:points) {
+        _scale = glm::max(glm::length(p - _center), _scale);
+    }
 }

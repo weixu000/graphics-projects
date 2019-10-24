@@ -13,10 +13,12 @@ add_executable(Project2
         main.cpp
         shaders/Shader.cpp shaders/Shader.h
         Window.cpp Window.h
-        objects/Object.h
-        objects/Cube.cpp objects/Cube.h
-        objects/Mesh.cpp objects/Mesh.h
         Material.cpp Material.h
         PointLight.cpp PointLight.h
-        Trackball.cpp Trackball.h)
+        objects/Node.h
+        objects/Geometry.h
+        objects/Cube.cpp objects/Cube.h
+        objects/Mesh.cpp objects/Mesh.h
+        objects/Transform.cpp objects/Transform.h
+        objects/Trackball.cpp objects/Trackball.h)
 target_link_libraries(Project2 GLEW::glew_s GLFW3::GLFW3 glm)

@@ -7,20 +7,18 @@ void Trackball::start(float x, float y) {
     started = true;
 }
 
-glm::mat4 Trackball::move(float x, float y) {
+void Trackball::move(float x, float y) {
     if (started) {
         auto cur = viewportToTrackball(x, y);
         auto rad = glm::acos(glm::dot(initial, cur));
         auto axis = glm::cross(initial, cur);
         if (glm::length(axis) == 0) {
-            return glm::mat4(1.0f); // avoid NaN
+            return;
         }
         auto next = glm::rotate(rad, axis);
         auto delta = next * glm::transpose(orientation);
         orientation = next;
-        return delta;
-    } else {
-        return glm::mat4(1.0f);
+        model = delta * model;
     }
 }
 
@@ -29,8 +27,8 @@ void Trackball::stop() {
     orientation = glm::mat4(1.0f);
 }
 
-glm::mat4 Trackball::scale(float offset) {
-    return glm::scale(glm::vec3(glm::max(0.0f, 1 + 0.1f * offset)));
+void Trackball::scale(float offset) {
+    model = glm::scale(glm::vec3(glm::max(0.0f, 1 + 0.1f * offset))) * model;
 }
 
 glm::vec3 Trackball::viewportToTrackball(float x, float y) {

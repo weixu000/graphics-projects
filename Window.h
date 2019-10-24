@@ -12,11 +12,13 @@
 
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
 
-#include "objects/Object.h"
+#include "objects/Transform.h"
+#include "objects/Geometry.h"
+#include "objects/Trackball.h"
 #include "shaders/Shader.h"
 #include "PointLight.h"
-#include "Trackball.h"
 
 // Make sure OpenGL context is ready before anything else, since it is base class
 class OpenGLContext {
@@ -46,13 +48,12 @@ public:
                                             float(width) / float(height), 1.0f, 1000.0f),
             view = glm::lookAt(Window::eye, Window::center, Window::up);
 
-    Object *models[3], *currentObj;
+    std::shared_ptr<Transform> scene;
+    std::shared_ptr<Geometry> model;
 
-    Shader normalShader, phongShader, *curShader;
+    std::shared_ptr<Shader> normalShader, phongShader, curShader;
 
-    PointLight *light;
-
-    Trackball trackball;
+    std::shared_ptr<Trackball> trackball;
 
     enum class Mode {
         MODEL,

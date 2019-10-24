@@ -3,17 +3,21 @@
 
 #include <glm/glm.hpp>
 
-class Trackball {
+#include "Transform.h"
+
+class Trackball : public Transform {
 public:
+    using Transform::Transform;
+
     // x,y should be normalized
     void start(float x, float y);
 
     // x,y should be normalized
-    glm::mat4 move(float x, float y);
+    void move(float x, float y);
 
     void stop();
 
-    static glm::mat4 scale(float offset);
+    void scale(float offset);
 
 private:
     static glm::vec3 viewportToTrackball(float x, float y);
