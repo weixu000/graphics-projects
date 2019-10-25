@@ -1,6 +1,5 @@
-#include <fstream>
-#include <sstream>
 #include <iostream>
+#include <fstream>
 #include <map>
 #include <tuple>
 
@@ -54,30 +53,29 @@ void Mesh::loadOBJ(const std::string &objFilename) {
     }
     std::vector<glm::vec3> vertices, normals;
     std::vector<GLuint> faces;
-    std::string line;
-    while (std::getline(objFile, line)) {
-        std::istringstream ss(line);
+    while (objFile) {
         std::string label;
-        ss >> label;
+        objFile >> label;
         if (label == "v") {
             glm::vec3 p;
-            ss >> p.x >> p.y >> p.z;
+            objFile >> p.x >> p.y >> p.z;
             vertices.push_back(p);
         } else if (label == "vn") {
             glm::vec3 n;
-            ss >> n.x >> n.y >> n.z;
+            objFile >> n.x >> n.y >> n.z;
             normals.push_back(glm::normalize(n));
         } else if (label == "f") {
             for (int i = 0; i < 3; ++i) {
                 GLuint v, n;
-                ss >> v;
+                objFile >> v;
                 faces.push_back(v - 1);
-                ss.ignore(std::numeric_limits<std::streamsize>::max(), '/');
-                ss.ignore(std::numeric_limits<std::streamsize>::max(), '/');
-                ss >> n;
+                objFile.ignore(std::numeric_limits<std::streamsize>::max(), '/');
+                objFile.ignore(std::numeric_limits<std::streamsize>::max(), '/');
+                objFile >> n;
                 faces.push_back(n - 1);
             }
         }
+        objFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
     objFile.close();
 
