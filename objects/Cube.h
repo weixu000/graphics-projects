@@ -4,28 +4,26 @@
 #ifdef __APPLE__
 #include <OpenGL/gl3.h>
 #else
+
 #include <GL/glew.h>
+
 #endif
 
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
-#include <vector>
 
-#include "Object.h"
+#include "Geometry.h"
 
-class Cube : public Object
-{
+class Cube : public Geometry {
 private:
-	GLuint vao;
-	GLuint vbos[2];
+    GLuint vao;
+    GLuint vbo;
 public:
-	Cube(float size);
-	~Cube();
+    Cube();
 
-    void draw(Shader &);
-	void update();
+    ~Cube() override;
 
-	void spin(float deg);
+    void draw(const glm::mat4 &world) override;
 };
 
 #endif

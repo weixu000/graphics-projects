@@ -4,6 +4,7 @@
 
 #include "Window.h"
 #include "objects/Mesh.h"
+#include "objects/Cube.h"
 
 OpenGLContext::OpenGLContext() {
     // 4x antialiasing.
@@ -106,14 +107,14 @@ void Window::initializeObjects() {
     Material mat;
 
     // diffuse and shiny
-    mat.ks = glm::vec3(0.633f, 0.727811f, 0.633f);
-    mat.kd = glm::vec3(0.07568f, 0.61424f, 0.07568f);
-    mat.ka = glm::vec3(0.0215f, 0.1745f, 0.0215f);
-    mat.alpha = 0.6f * 128;
-    auto bunny = std::make_shared<Mesh>("meshes/bunny.obj", mat);
-    model = bunny;
+//    mat.ks = glm::vec3(0.633f, 0.727811f, 0.633f);
+//    mat.kd = glm::vec3(0.07568f, 0.61424f, 0.07568f);
+//    mat.ka = glm::vec3(0.0215f, 0.1745f, 0.0215f);
+//    mat.alpha = 0.6f * 128;
+//    auto bunny = std::make_shared<Mesh>("meshes/bunny.obj", mat);
+    model = std::make_shared<Cube>();
 
-    trackball = std::make_shared<Trackball>(bunny->normalizeMat());
+    trackball = std::make_shared<Trackball>(glm::mat4{1.0f});
     trackball->addChild(std::static_pointer_cast<Node>(model));
 
     scene = std::make_shared<Transform>();
