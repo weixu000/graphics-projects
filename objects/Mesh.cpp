@@ -1,6 +1,8 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <map>
+#include <tuple>
 
 #include "Mesh.h"
 #include "../shaders/Shader.h"
@@ -13,39 +15,31 @@ Mesh::Mesh(const std::string &objFilename, const Material &m)
 
     // Generate VAO, VBO, EBO.
     glGenVertexArrays(1, &vao);
-    glGenBuffers(2, vbo);
+    glGenBuffers(1, &vbo);
     glGenBuffers(1, &ebo);
 
     // Bind to the VAO.
     glBindVertexArray(vao);
 
-    // Bind to the first VBO.
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
     // Pass in the data.
-    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * points.size(),
-                 points.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * attrs.size(),
+                 attrs.data(), GL_STATIC_DRAW);
     // Enable vertex attribute 0.
     // We will be able to access points through it.
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
-
-    // Bind to the second VBO.
-    glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
-    // Pass in the data.
-    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * normals.size(),
-                 normals.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
+                          2 * sizeof(glm::vec3), nullptr);
     // Enable vertex attribute 1.
-    // We will be able to access points through it.
+    // We will be able to access normals through it.
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
-
-    // Unbind from the VBO.
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 2 * sizeof(glm::vec3),
+                          reinterpret_cast<void *>(sizeof(glm::vec3)));
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    // Bind to the EBO.
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     // Pass in the data.
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(glm::uvec3) * indices.size(),
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(),
                  indices.data(), GL_STATIC_DRAW);
 
     // Unbind from the VAO.
@@ -54,39 +48,56 @@ Mesh::Mesh(const std::string &objFilename, const Material &m)
 
 void Mesh::loadOBJ(const std::string &objFilename) {
     std::ifstream objFile(objFilename);
-    if (objFile.is_open()) {
-        std::string line;
-        while (std::getline(objFile, line)) {
-            std::istringstream ss(line);
-            std::string label;
-            ss >> label;
-            if (label == "v") {
-                glm::vec3 p;
-                ss >> p.x >> p.y >> p.z;
-                points.push_back(p);
-            } else if (label == "vn") {
-                glm::vec3 n;
-                ss >> n.x >> n.y >> n.z;
-                normals.push_back(glm::normalize(n));
-            } else if (label == "f") {
-                glm::uvec3 f;
-                char delim;
-                ss >> f.x >> delim >> delim >> f.x
-                   >> f.y >> delim >> delim >> f.y
-                   >> f.z >> delim >> delim >> f.z;
-                indices.push_back(f - 1U);
+    if (!objFile.is_open()) {
+        std::cerr << "Can't open the file " << objFilename << std::endl;
+        return;
+    }
+    std::vector<glm::vec3> vertices, normals;
+    std::vector<GLuint> faces;
+    std::string line;
+    while (std::getline(objFile, line)) {
+        std::istringstream ss(line);
+        std::string label;
+        ss >> label;
+        if (label == "v") {
+            glm::vec3 p;
+            ss >> p.x >> p.y >> p.z;
+            vertices.push_back(p);
+        } else if (label == "vn") {
+            glm::vec3 n;
+            ss >> n.x >> n.y >> n.z;
+            normals.push_back(glm::normalize(n));
+        } else if (label == "f") {
+            for (int i = 0; i < 3; ++i) {
+                GLuint v, n;
+                ss >> v;
+                faces.push_back(v - 1);
+                ss.ignore(std::numeric_limits<std::streamsize>::max(), '/');
+                ss.ignore(std::numeric_limits<std::streamsize>::max(), '/');
+                ss >> n;
+                faces.push_back(n - 1);
             }
         }
-        std::cout << objFilename << " " << points.size() << std::endl;
-    } else {
-        std::cerr << "Can't open the file " << objFilename << std::endl;
     }
     objFile.close();
+
+    // Use std::map to record each different vertex/normal pairs
+    std::map<std::tuple<GLuint, GLuint>, GLuint> indices_map;
+    for (auto it_f = faces.begin(); it_f != faces.end(); it_f += 2) {
+        GLuint v = *it_f, n = *(it_f + 1);
+        auto[it_m, inserted] = indices_map.insert(std::make_pair(std::make_tuple(v, n), attrs.size() >> 1));
+        if (inserted) {
+            attrs.push_back(vertices[v]);
+            attrs.push_back(normals[n]);
+        }
+        indices.push_back(it_m->second);
+    }
+    std::cout << objFilename << " " << (attrs.size() >> 1) << std::endl;
 }
 
 Mesh::~Mesh() {
     // Delete VBO, EBO, VAO.
-    glDeleteBuffers(2, vbo);
+    glDeleteBuffers(1, &vbo);
     glDeleteBuffers(1, &ebo);
     glDeleteVertexArrays(1, &vao);
 }
@@ -97,7 +108,7 @@ void Mesh::draw(const glm::mat4 &world) {
     // Bind to the VAO.
     glBindVertexArray(vao);
     // Draw points
-    glDrawElements(GL_TRIANGLES, 3 * indices.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
     // Unbind from the VAO.
     glBindVertexArray(0);
 }
@@ -110,15 +121,15 @@ glm::mat4 Mesh::normalizeMat() const {
 }
 
 void Mesh::computeStatistics() {
-    minVal = points[0], maxVal = points[0];
-    for (auto &p:points) {
-        minVal = glm::min(minVal, p);
-        maxVal = glm::max(maxVal, p);
+    minVal = attrs[0], maxVal = attrs[0];
+    for (auto it = attrs.begin(); it != attrs.end(); it += 2) {
+        minVal = glm::min(minVal, *it);
+        maxVal = glm::max(maxVal, *it);
     }
     _center = (maxVal + minVal) / 2.0f;
 
     _scale = 0.0f;
-    for (auto &p:points) {
-        _scale = glm::max(glm::length(p - _center), _scale);
+    for (auto it = attrs.begin(); it != attrs.end(); it += 2) {
+        _scale = glm::max(glm::length(*it - _center), _scale);
     }
 }

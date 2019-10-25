@@ -36,9 +36,9 @@ public:
     glm::mat4 normalizeMat() const;
 
 private:
-    std::vector<glm::vec3> points, normals;
-    std::vector<glm::uvec3> indices;
-    GLuint vao, vbo[2], ebo;
+    std::vector<glm::vec3> attrs; // vertices and normals interleaved
+    std::vector<GLuint> indices;
+    GLuint vao, vbo, ebo;
     Material mat;
 
     glm::vec3 minVal, maxVal, _center;
