@@ -18,30 +18,9 @@
 #include "objects/Geometry.h"
 #include "objects/Trackball.h"
 #include "shaders/Shader.h"
-#include "PointLight.h"
+#include "GLContext.h"
 
-// Make sure OpenGL context is ready before anything else, since it is base class
-class OpenGLContext {
-public:
-    GLFWwindow *window;
-
-    int width = 640, height = 480;
-    const char *windowTitle = "GLFW Starter Project";
-
-    OpenGLContext();
-
-    virtual ~OpenGLContext();
-
-    OpenGLContext(const OpenGLContext &) = delete;
-
-    OpenGLContext(OpenGLContext &&) = delete;
-
-    OpenGLContext &operator=(const OpenGLContext &) = delete;
-
-    OpenGLContext &operator=(OpenGLContext &&) = delete;
-};
-
-class Window : public OpenGLContext {
+class Window : public GLContext {
 public:
     glm::vec3 eye{0, 0, 20}, center{0, 0, 0}, up{0, 1, 0};
     glm::mat4 projection = glm::perspective(glm::radians(60.0f),
@@ -54,14 +33,6 @@ public:
     std::shared_ptr<Shader> normalShader, phongShader, curShader;
 
     std::shared_ptr<Trackball> trackball;
-
-    enum class Mode {
-        MODEL,
-        LIGHT,
-        MODEL_LIGHT
-    };
-
-    Mode mode = Mode::MODEL;
 
     static Window *retrieve(GLFWwindow *w) { return reinterpret_cast<Window *>(glfwGetWindowUserPointer(w)); }
 

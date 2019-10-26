@@ -13,6 +13,7 @@ add_executable(Project2
         main.cpp
         shaders/Shader.cpp shaders/Shader.h
         Window.cpp Window.h
+        GLContext.h GLContext.cpp
         Material.cpp Material.h
         PointLight.cpp PointLight.h
         objects/Node.h
