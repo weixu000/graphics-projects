@@ -12,12 +12,16 @@ public:
 
     void draw(const glm::mat4 &world) override;
 
+    void update() override;
+
     void useShader(const std::shared_ptr<Shader> &s) override;
 
 private:
     std::shared_ptr<Transform> root;
 
     std::shared_ptr<Mesh> antenna, eyeball, head, body, limb;
+
+    std::shared_ptr<Transform> headControl, leftArmControl, rightArmControl, leftLegControl, rightLegControl;
 
     void initHead();
 

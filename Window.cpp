@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "Window.h"
+#include "Time.h"
 
 Window::Window() {
     setupCallbacks();
@@ -86,11 +87,11 @@ void Window::resizeCallback(int width, int height) {
     }
 }
 
-void Window::idleCallback() {
-    // Perform any updates as necessary.
+void Window::update() {
+    scene->update();
 }
 
-void Window::displayCallback() {
+void Window::draw() {
     // Clear the color and depth buffers.
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -101,7 +102,7 @@ void Window::displayCallback() {
     curShader->setUniform3f("viewPos", eye);
 
     // Render the object.
-    scene->draw(glm::mat4{1.0f});
+    scene->draw(glm::mat4(1.0f));
 
     // Gets events, including input such as keyboard and mouse or window resizing.
     glfwPollEvents();
@@ -148,4 +149,13 @@ void Window::cursorPosCallback(double x, double y) {
 
 void Window::scrollCallback(double xoffset, double yoffset) {
     trackball->scale(yoffset);
+}
+
+void Window::loop() {
+    Time::reset();
+    while (!glfwWindowShouldClose(window)) {
+        Time::tick();
+        draw();
+        update();
+    }
 }

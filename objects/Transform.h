@@ -11,16 +11,17 @@ class Transform : public Node {
 public:
     using NodePtr = std::shared_ptr<Node>;
 
-    Transform() = default;
+    explicit Transform(const glm::mat4 &m = glm::mat4(1.0f));
 
-    explicit Transform(const glm::mat4 &m);
+    glm::mat4 model;
 
     void draw(const glm::mat4 &world) override;
+
+    void update() override;
 
     void addChild(NodePtr child);
 
 protected:
-    glm::mat4 model{1.0f};
     std::list<NodePtr> children;
 };
 

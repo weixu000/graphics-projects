@@ -60,10 +60,5 @@ int main(void) {
     // Setup OpenGL settings.
     setup_opengl_settings();
     // Loop while GLFW window should stay open.
-    while (!glfwWindowShouldClose(window.window)) {
-        // Main render display callback. Rendering of objects is done here.
-        window.displayCallback();
-        // Idle callback. Updating objects, etc. can be done here.
-        window.idleCallback();
-    }
+    window.loop();
 }

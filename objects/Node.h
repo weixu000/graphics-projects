@@ -9,6 +9,8 @@ public:
     virtual ~Node() = default;
 
     virtual void draw(const glm::mat4 &world) = 0;
+
+    virtual void update() {};
 };
 
 

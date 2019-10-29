@@ -39,6 +39,8 @@ public:
 
     Window();
 
+    void loop();
+
     virtual ~Window();
 
     void setupCallbacks();
@@ -49,9 +51,9 @@ public:
 
     void resizeCallback(int width, int height);
 
-    void idleCallback();
+    void update();
 
-    void displayCallback();
+    void draw();
 
     void keyCallback(int key, int scancode, int action, int mods);
 

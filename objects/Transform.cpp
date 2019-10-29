@@ -1,9 +1,7 @@
 #include "Transform.h"
 
 Transform::Transform(const glm::mat4 &m)
-        : model(m) {
-
-}
+        : model(m) {}
 
 void Transform::draw(const glm::mat4 &world) {
     auto m = world * model;
@@ -14,4 +12,10 @@ void Transform::draw(const glm::mat4 &world) {
 
 void Transform::addChild(NodePtr child) {
     children.push_back(std::move(child));
+}
+
+void Transform::update() {
+    for (auto &n:children) {
+        n->update();
+    }
 }
