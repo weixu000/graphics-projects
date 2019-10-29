@@ -2,8 +2,6 @@
 #include <iostream>
 
 #include "Window.h"
-#include "objects/Mesh.h"
-#include "objects/Cube.h"
 
 Window::Window() {
     setupCallbacks();
@@ -59,20 +57,14 @@ void Window::initializeProgram() {
 }
 
 void Window::initializeObjects() {
-    Material mat;
+    robot = std::make_shared<Robot>();
+    robot->useShader(normalShader);
 
-    mat.ks = glm::vec3(0.633f, 0.727811f, 0.633f);
-    mat.kd = glm::vec3(0.07568f, 0.61424f, 0.07568f);
-    mat.ka = glm::vec3(0.0215f, 0.1745f, 0.0215f);
-    mat.alpha = 0.6f * 128;
-    auto bunny = std::make_shared<Mesh>("meshes/bear.obj", mat);
-    model = bunny;
-
-    trackball = std::make_shared<Trackball>(bunny->normalizeMat());
-    trackball->addChild(std::static_pointer_cast<Node>(model));
+    trackball = std::make_shared<Trackball>();
+    trackball->addChild(robot);
 
     scene = std::make_shared<Transform>();
-    scene->addChild(std::static_pointer_cast<Node>(trackball));
+    scene->addChild(trackball);
 }
 
 Window::~Window() {}
@@ -109,7 +101,6 @@ void Window::displayCallback() {
     curShader->setUniform3f("viewPos", eye);
 
     // Render the object.
-    model->useShader(curShader);
     scene->draw(glm::mat4{1.0f});
 
     // Gets events, including input such as keyboard and mouse or window resizing.

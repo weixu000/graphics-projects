@@ -19,7 +19,7 @@
 
 class Mesh : public Geometry {
 public:
-    Mesh(const std::string &objFilename, const Material &m);
+    Mesh(const std::string &objFilename);
 
     ~Mesh() override;
 
@@ -39,7 +39,7 @@ private:
     std::vector<glm::vec3> attrs; // vertices and normals interleaved
     std::vector<GLuint> indices;
     GLuint vao, vbo, ebo;
-    Material mat;
+    std::shared_ptr<Material> mat;
 
     glm::vec3 minVal, maxVal, _center;
     float _scale;

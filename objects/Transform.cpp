@@ -12,6 +12,6 @@ void Transform::draw(const glm::mat4 &world) {
     }
 }
 
-void Transform::addChild(const std::shared_ptr<Node> &child) {
-    children.push_back(child);
+void Transform::addChild(NodePtr child) {
+    children.push_back(std::move(child));
 }

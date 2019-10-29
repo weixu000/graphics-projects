@@ -8,9 +8,7 @@
 
 class Geometry : public Node {
 public:
-    void draw(const glm::mat4 &world) = 0;
-
-    void useShader(const std::shared_ptr<Shader> &s) { shader = s; }
+    virtual void useShader(const std::shared_ptr<Shader> &s) { shader = s; }
 
 protected:
     std::shared_ptr<Shader> shader;

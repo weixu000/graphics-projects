@@ -15,7 +15,7 @@
 #include <glm/gtx/transform.hpp>
 
 #include "objects/Transform.h"
-#include "objects/Geometry.h"
+#include "objects/Robot.h"
 #include "objects/Trackball.h"
 #include "shaders/Shader.h"
 #include "GLContext.h"
@@ -28,11 +28,12 @@ public:
             view = glm::lookAt(Window::eye, Window::center, Window::up);
 
     std::shared_ptr<Transform> scene;
-    std::shared_ptr<Geometry> model;
 
     std::shared_ptr<Shader> normalShader, phongShader, curShader;
 
     std::shared_ptr<Trackball> trackball;
+
+    std::shared_ptr<Robot> robot;
 
     static Window *retrieve(GLFWwindow *w) { return reinterpret_cast<Window *>(glfwGetWindowUserPointer(w)); }
 

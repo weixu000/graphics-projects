@@ -9,7 +9,7 @@ find_package(GLEW REQUIRED)
 find_package(GLFW3 REQUIRED)
 find_package(GLM REQUIRED)
 
-add_executable(Project2
+add_executable(Project3
         main.cpp
         shaders/Shader.cpp shaders/Shader.h
         Window.cpp Window.h
@@ -21,5 +21,6 @@ add_executable(Project2
         objects/Cube.cpp objects/Cube.h
         objects/Mesh.cpp objects/Mesh.h
         objects/Transform.cpp objects/Transform.h
-        objects/Trackball.cpp objects/Trackball.h)
-target_link_libraries(Project2 GLEW::glew_s GLFW3::GLFW3 glm)
+        objects/Trackball.cpp objects/Trackball.h
+        objects/Robot.cpp objects/Robot.h)
+target_link_libraries(Project3 GLEW::glew_s GLFW3::GLFW3 glm)

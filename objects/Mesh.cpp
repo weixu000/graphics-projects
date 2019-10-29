@@ -6,8 +6,7 @@
 #include "Mesh.h"
 #include "../shaders/Shader.h"
 
-Mesh::Mesh(const std::string &objFilename, const Material &m)
-        : mat(m) {
+Mesh::Mesh(const std::string &objFilename) {
     loadOBJ(objFilename);
 
     computeStatistics();
@@ -101,7 +100,10 @@ Mesh::~Mesh() {
 }
 
 void Mesh::draw(const glm::mat4 &world) {
-    mat.setUniform(*shader);
+    if (mat) {
+        mat->setUniform(*shader);
+    }
+    assert(shader);
     shader->setUniformMatrix4("model", world);
     // Bind to the VAO.
     glBindVertexArray(vao);
