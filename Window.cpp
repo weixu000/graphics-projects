@@ -58,11 +58,19 @@ void Window::initializeProgram() {
 }
 
 void Window::initializeObjects() {
+    trackball = std::make_shared<Trackball>();
     robot = std::make_shared<Robot>();
     robot->useShader(normalShader);
 
-    trackball = std::make_shared<Trackball>();
-    trackball->addChild(robot);
+    for (auto i = -5; i < 5; ++i) {
+        for (auto j = -5; j < 5; ++j) {
+            auto grid = std::make_shared<Transform>(
+                    glm::translate(glm::vec3(i, 0, j)) * glm::scale(glm::vec3(0.2f, 0.2f, 0.2f)));
+            grid->addChild(robot);
+
+            trackball->addChild(grid);
+        }
+    }
 
     scene = std::make_shared<Transform>();
     scene->addChild(trackball);
