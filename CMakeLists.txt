@@ -19,7 +19,6 @@ add_executable(Project3
         Time.cpp Time.h
         objects/Node.h
         objects/Geometry.h
-        objects/Cube.cpp objects/Cube.h
         objects/Mesh.cpp objects/Mesh.h
         objects/Transform.cpp objects/Transform.h
         objects/Trackball.cpp objects/Trackball.h

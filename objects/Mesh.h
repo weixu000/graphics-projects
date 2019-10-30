@@ -35,11 +35,15 @@ public:
 
     static Mesh fromObjFile(const std::string &objFilename);
 
+    static Mesh cube();
+
     void draw(const glm::mat4 &world) override;
 
     const glm::vec3 &minBound() const { return minVal; }
 
-    const glm::vec3 &maxBound() const { return maxVal; }
+    const glm::vec3 &minVal() const { return _minVal; }
+
+    const glm::vec3 &maxVal() const { return _maxVal; }
 
     glm::vec3 center() const { return _center; }
 
@@ -52,7 +56,7 @@ private:
     GLuint vao = 0, vbo = 0, ebo = 0;
     std::shared_ptr<Material> mat;
 
-    glm::vec3 minVal, maxVal, _center;
+    glm::vec3 _minVal, _maxVal, _center;
     float _scale;
 
     void computeStatistics(const std::vector<glm::vec3> &attrs, const std::vector<GLuint> &indices);

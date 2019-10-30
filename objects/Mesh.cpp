@@ -2,6 +2,7 @@
 #include <fstream>
 #include <map>
 #include <tuple>
+#include <numeric>
 
 #include "Mesh.h"
 #include "../shaders/Shader.h"
@@ -42,6 +43,70 @@ Mesh::Mesh(std::vector<glm::vec3> attrs, std::vector<GLuint> indices) {
 
     // Unbind from the VAO.
     glBindVertexArray(0);
+}
+
+Mesh::~Mesh() {
+    // Delete VBO, EBO, VAO.
+    glDeleteBuffers(1, &vbo);
+    glDeleteBuffers(1, &ebo);
+    glDeleteVertexArrays(1, &vao);
+}
+
+Mesh::Mesh(Mesh &&other)
+        : Mesh() {
+    *this = std::move(other);
+}
+
+
+Mesh &Mesh::operator=(Mesh &&other) {
+    count = other.count;
+    vbo = other.vbo;
+    vao = other.vao;
+    ebo = other.ebo;
+    mat = std::move(other.mat);
+    _minVal = other._minVal;
+    _maxVal = other._maxVal;
+    _scale = other._scale;
+
+    other.count = 0;
+    other.vbo = other.vao = other.ebo = 0;
+
+    return *this;
+}
+
+void Mesh::draw(const glm::mat4 &world) {
+    if (mat) {
+        mat->setUniform(*shader);
+    }
+    assert(shader);
+    shader->setUniformMatrix4("model", world);
+    // Bind to the VAO.
+    glBindVertexArray(vao);
+    // Draw points
+    glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
+    // Unbind from the VAO.
+    glBindVertexArray(0);
+}
+
+glm::mat4 Mesh::normalizeMat() const {
+    glm::mat4 model{1.0f};
+    model = glm::scale(model, glm::vec3(11.5 / _scale));
+    model = glm::translate(model, -_center);
+    return model;
+}
+
+void Mesh::computeStatistics(const std::vector<glm::vec3> &attrs, const std::vector<GLuint> &indices) {
+    _minVal = attrs[0], _maxVal = attrs[0];
+    for (auto it = attrs.begin(); it != attrs.end(); it += 2) {
+        _minVal = glm::min(_minVal, *it);
+        _maxVal = glm::max(_maxVal, *it);
+    }
+    _center = (_maxVal + _minVal) / 2.0f;
+
+    _scale = 0.0f;
+    for (auto it = attrs.begin(); it != attrs.end(); it += 2) {
+        _scale = glm::max(glm::length(*it - _center), _scale);
+    }
 }
 
 Mesh Mesh::fromObjFile(const std::string &objFilename) {
@@ -97,66 +162,59 @@ Mesh Mesh::fromObjFile(const std::string &objFilename) {
     return Mesh(attrs, indices);
 }
 
-Mesh::~Mesh() {
-    // Delete VBO, EBO, VAO.
-    glDeleteBuffers(1, &vbo);
-    glDeleteBuffers(1, &ebo);
-    glDeleteVertexArrays(1, &vao);
-}
 
-Mesh::Mesh(Mesh &&other)
-        : Mesh() {
-    *this = std::move(other);
-}
+Mesh Mesh::cube() {
+    std::array<GLfloat, 6 * 6 * 6> data = {
+            -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, -1.0f,
+            1.0f, -1.0f, -1.0f, 0.0f, 0.0f, -1.0f,
+            1.0f, 1.0f, -1.0f, 0.0f, 0.0f, -1.0f,
+            1.0f, 1.0f, -1.0f, 0.0f, 0.0f, -1.0f,
+            -1.0f, 1.0f, -1.0f, 0.0f, 0.0f, -1.0f,
+            -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, -1.0f,
 
+            -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+            1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+            1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+            1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+            -1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+            -1.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
 
-Mesh &Mesh::operator=(Mesh &&other) {
-    count = other.count;
-    vbo = other.vbo;
-    vao = other.vao;
-    ebo = other.ebo;
-    mat = std::move(other.mat);
-    minVal = other.minVal;
-    maxVal = other.maxVal;
-    _scale = other._scale;
+            -1.0f, 1.0f, 1.0f, -1.0f, 0.0f, 0.0f,
+            -1.0f, 1.0f, -1.0f, -1.0f, 0.0f, 0.0f,
+            -1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 0.0f,
+            -1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 0.0f,
+            -1.0f, -1.0f, 1.0f, -1.0f, 0.0f, 0.0f,
+            -1.0f, 1.0f, 1.0f, -1.0f, 0.0f, 0.0f,
 
-    other.count = 0;
-    other.vbo = other.vao = other.ebo = 0;
+            1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+            1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 0.0f,
+            1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f,
+            1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 0.0f,
+            1.0f, -1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
+            1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,
 
-    return *this;
-}
+            -1.0f, -1.0f, -1.0f, 0.0f, -1.0f, 0.0f,
+            1.0f, -1.0f, -1.0f, 0.0f, -1.0f, 0.0f,
+            1.0f, -1.0f, 1.0f, 0.0f, -1.0f, 0.0f,
+            1.0f, -1.0f, 1.0f, 0.0f, -1.0f, 0.0f,
+            -1.0f, -1.0f, 1.0f, 0.0f, -1.0f, 0.0f,
+            -1.0f, -1.0f, -1.0f, 0.0f, -1.0f, 0.0f,
 
-void Mesh::draw(const glm::mat4 &world) {
-    if (mat) {
-        mat->setUniform(*shader);
+            -1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+            1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+            1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+            1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+            -1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+            -1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f
+    };
+
+    std::vector<glm::vec3> attrs;
+    for (size_t i = 0; i < data.size(); i += 3) {
+        attrs.emplace_back(data[i], data[i + 1], data[i + 2]);
     }
-    assert(shader);
-    shader->setUniformMatrix4("model", world);
-    // Bind to the VAO.
-    glBindVertexArray(vao);
-    // Draw points
-    glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
-    // Unbind from the VAO.
-    glBindVertexArray(0);
-}
 
-glm::mat4 Mesh::normalizeMat() const {
-    glm::mat4 model{1.0f};
-    model = glm::scale(model, glm::vec3(11.5 / _scale));
-    model = glm::translate(model, -_center);
-    return model;
-}
+    std::vector<GLuint> indices(6 * 6);
+    std::iota(indices.begin(), indices.end(), 0);
 
-void Mesh::computeStatistics(const std::vector<glm::vec3> &attrs, const std::vector<GLuint> &indices) {
-    minVal = attrs[0], maxVal = attrs[0];
-    for (auto it = attrs.begin(); it != attrs.end(); it += 2) {
-        minVal = glm::min(minVal, *it);
-        maxVal = glm::max(maxVal, *it);
-    }
-    _center = (maxVal + minVal) / 2.0f;
-
-    _scale = 0.0f;
-    for (auto it = attrs.begin(); it != attrs.end(); it += 2) {
-        _scale = glm::max(glm::length(*it - _center), _scale);
-    }
+    return Mesh(attrs, indices);
 }
