@@ -5,11 +5,11 @@
 
 Robot::Robot()
         : root(std::make_shared<Transform>()),
-          antenna(std::make_shared<Mesh>("meshes/Robot-parts-2018/antenna_s.obj")),
-          eyeball(std::make_shared<Mesh>("meshes/Robot-parts-2018/eyeball_s.obj")),
-          head(std::make_shared<Mesh>("meshes/Robot-parts-2018/head_s.obj")),
-          limb(std::make_shared<Mesh>("meshes/Robot-parts-2018/limb_s.obj")),
-          body(std::make_shared<Mesh>("meshes/Robot-parts-2018/body_s.obj")) {
+          antenna(std::make_shared<Mesh>(Mesh::fromObjFile("meshes/Robot-parts-2018/antenna_s.obj"))),
+          eyeball(std::make_shared<Mesh>(Mesh::fromObjFile("meshes/Robot-parts-2018/eyeball_s.obj"))),
+          head(std::make_shared<Mesh>(Mesh::fromObjFile("meshes/Robot-parts-2018/head_s.obj"))),
+          limb(std::make_shared<Mesh>(Mesh::fromObjFile("meshes/Robot-parts-2018/limb_s.obj"))),
+          body(std::make_shared<Mesh>(Mesh::fromObjFile("meshes/Robot-parts-2018/body_s.obj"))) {
 
     root->addChild(body);
 

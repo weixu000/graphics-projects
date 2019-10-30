@@ -6,10 +6,10 @@
 #include "Mesh.h"
 #include "../shaders/Shader.h"
 
-Mesh::Mesh(const std::string &objFilename) {
-    loadOBJ(objFilename);
+Mesh::Mesh(std::vector<glm::vec3> attrs, std::vector<GLuint> indices) {
+    count = indices.size();
 
-    computeStatistics();
+    computeStatistics(attrs, indices);
 
     // Generate VAO, VBO, EBO.
     glGenVertexArrays(1, &vao);
@@ -44,11 +44,11 @@ Mesh::Mesh(const std::string &objFilename) {
     glBindVertexArray(0);
 }
 
-void Mesh::loadOBJ(const std::string &objFilename) {
+Mesh Mesh::fromObjFile(const std::string &objFilename) {
     std::ifstream objFile(objFilename);
     if (!objFile.is_open()) {
         std::cerr << "Can't open the file " << objFilename << std::endl;
-        return;
+        return Mesh();
     }
     std::vector<glm::vec3> vertices, normals;
     std::vector<GLuint> faces;
@@ -78,6 +78,9 @@ void Mesh::loadOBJ(const std::string &objFilename) {
     }
     objFile.close();
 
+    std::vector<glm::vec3> attrs; // vertices and normals interleaved
+    std::vector<GLuint> indices;
+
     // Use std::map to record each different vertex/normal pairs
     std::map<std::tuple<GLuint, GLuint>, GLuint> indices_map;
     for (auto it_f = faces.begin(); it_f != faces.end(); it_f += 2) {
@@ -90,6 +93,8 @@ void Mesh::loadOBJ(const std::string &objFilename) {
         indices.push_back(it_m->second);
     }
     std::cout << objFilename << " " << (attrs.size() >> 1) << std::endl;
+
+    return Mesh(attrs, indices);
 }
 
 Mesh::~Mesh() {
@@ -97,6 +102,28 @@ Mesh::~Mesh() {
     glDeleteBuffers(1, &vbo);
     glDeleteBuffers(1, &ebo);
     glDeleteVertexArrays(1, &vao);
+}
+
+Mesh::Mesh(Mesh &&other)
+        : Mesh() {
+    *this = std::move(other);
+}
+
+
+Mesh &Mesh::operator=(Mesh &&other) {
+    count = other.count;
+    vbo = other.vbo;
+    vao = other.vao;
+    ebo = other.ebo;
+    mat = std::move(other.mat);
+    minVal = other.minVal;
+    maxVal = other.maxVal;
+    _scale = other._scale;
+
+    other.count = 0;
+    other.vbo = other.vao = other.ebo = 0;
+
+    return *this;
 }
 
 void Mesh::draw(const glm::mat4 &world) {
@@ -108,7 +135,7 @@ void Mesh::draw(const glm::mat4 &world) {
     // Bind to the VAO.
     glBindVertexArray(vao);
     // Draw points
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
     // Unbind from the VAO.
     glBindVertexArray(0);
 }
@@ -120,7 +147,7 @@ glm::mat4 Mesh::normalizeMat() const {
     return model;
 }
 
-void Mesh::computeStatistics() {
+void Mesh::computeStatistics(const std::vector<glm::vec3> &attrs, const std::vector<GLuint> &indices) {
     minVal = attrs[0], maxVal = attrs[0];
     for (auto it = attrs.begin(); it != attrs.end(); it += 2) {
         minVal = glm::min(minVal, *it);
