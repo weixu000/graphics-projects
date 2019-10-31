@@ -69,12 +69,12 @@ void Window::initializeObjects() {
         }
     }
 
-    scene.transform = trackball = std::make_shared<Trackball>();
-
     glm::vec3 eye(0, 0, 20);
     glm::mat4 projection = glm::perspective(glm::radians(60.0f),
                                             float(width) / float(height), 1.0f, 1000.0f);
-    cam = static_cast<Camera *>(scene.addChild(std::make_unique<Camera>(projection, glm::translate(eye))));
+
+    camCtl = std::make_shared<FreeFlying>(glm::translate(eye));
+    cam = static_cast<Camera *>(scene.addChild(std::make_unique<Camera>(projection, camCtl)));
 }
 
 Window::~Window() {}
@@ -98,6 +98,18 @@ void Window::resizeCallback(int width, int height) {
 
 void Window::update() {
     scene.update();
+    if (W) {
+        camCtl->move(FreeFlying::MoveDirection::Forward);
+    }
+    if (A) {
+        camCtl->move(FreeFlying::MoveDirection::Left);
+    }
+    if (S) {
+        camCtl->move(FreeFlying::MoveDirection::Backward);
+    }
+    if (D) {
+        camCtl->move(FreeFlying::MoveDirection::Right);
+    }
 }
 
 void Window::draw() {
@@ -110,8 +122,6 @@ void Window::draw() {
     // Render the object.
     scene.draw(glm::mat4(1.0f), cam->projection, cam->view, cam->eye);
 
-    // Gets events, including input such as keyboard and mouse or window resizing.
-    glfwPollEvents();
     // Swap buffers.
     glfwSwapBuffers(window);
 }
@@ -123,6 +133,35 @@ void Window::keyCallback(int key, int scancode, int action, int mods) {
             case GLFW_KEY_ESCAPE:
                 // Close the window. This causes the program to also terminate.
                 glfwSetWindowShouldClose(window, GL_TRUE);
+                break;
+            case GLFW_KEY_W:
+                W = true;
+                break;
+            case GLFW_KEY_A:
+                A = true;
+                break;
+            case GLFW_KEY_S:
+                S = true;
+                break;
+            case GLFW_KEY_D:
+                D = true;
+                break;
+            default:
+                break;
+        }
+    } else if (action == GLFW_RELEASE) {
+        switch (key) {
+            case GLFW_KEY_W:
+                W = false;
+                break;
+            case GLFW_KEY_A:
+                A = false;
+                break;
+            case GLFW_KEY_S:
+                S = false;
+                break;
+            case GLFW_KEY_D:
+                D = false;
                 break;
             default:
                 break;
@@ -136,9 +175,9 @@ void Window::mouseButtonCallback(int button, int action, int mods) {
             if (action == GLFW_PRESS) {
                 double x, y;
                 glfwGetCursorPos(window, &x, &y);
-                trackball->start(x / Window::width, y / Window::height);
+                camCtl->startRotate(x / Window::width, y / Window::height);
             } else if (action == GLFW_RELEASE) {
-                trackball->stop();
+                camCtl->stopRotate();
             }
             break;
         default:
@@ -147,18 +186,18 @@ void Window::mouseButtonCallback(int button, int action, int mods) {
 }
 
 void Window::cursorPosCallback(double x, double y) {
-    trackball->move(x / Window::width, y / Window::height);
+    camCtl->rotate(x / Window::width, y / Window::height);
 }
 
 void Window::scrollCallback(double xoffset, double yoffset) {
-    trackball->scale(yoffset);
 }
 
 void Window::loop() {
     Time::reset();
     while (!glfwWindowShouldClose(window)) {
         Time::tick();
-        draw();
+        glfwPollEvents();
         update();
+        draw();
     }
 }

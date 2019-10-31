@@ -17,7 +17,7 @@
 #include "objects/Node.h"
 #include "objects/Camera.h"
 #include "objects/components/geometries/Robot.h"
-#include "objects/components/Trackball.h"
+#include "objects/components/FreeFlying.h"
 #include "shaders/Shader.h"
 #include "GLContext.h"
 
@@ -29,7 +29,8 @@ public:
 
     std::shared_ptr<Shader> normalShader, phongShader;
 
-    std::shared_ptr<Trackball> trackball;
+    std::shared_ptr<FreeFlying> camCtl;
+    bool W = false, A = false, S = false, D = false;
 
     std::shared_ptr<Robot> robot;
 

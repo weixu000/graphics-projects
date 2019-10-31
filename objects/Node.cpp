@@ -53,6 +53,8 @@ bool Node::cull(const glm::mat4 &view_proj) {
 }
 
 Node *Node::addChild(NodePtr child) {
+    assert(!child->_parent);
+    child->_parent = this;
     children.push_back(std::move(child));
     return children.back().get();
 }
