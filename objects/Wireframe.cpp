@@ -12,6 +12,14 @@ Wireframe::Wireframe(const std::vector<glm::vec3> &vertices, const std::vector<G
         : Wireframe() {
     count = indices.size();
 
+    const auto inf = std::numeric_limits<float>::infinity();
+    glm::vec3 minVal(inf, inf, inf), maxVal(-inf, -inf, -inf);
+    for (auto &v:vertices) {
+        minVal = glm::min(minVal, v);
+        maxVal = glm::max(maxVal, v);
+    }
+    bb = {minVal, maxVal};
+
     // Generate VAO, VBO.
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);
@@ -75,11 +83,6 @@ void Wireframe::draw(const glm::mat4 &world, const glm::mat4 &projection, const 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     // Unbind from the VAO.
     glBindVertexArray(0);
-}
-
-AABB Wireframe::boundingBox() const {
-    auto inf = std::numeric_limits<float>::infinity();
-    return {glm::vec3(-inf, -inf, -inf), glm::vec3(inf, inf, inf)};
 }
 
 Wireframe Wireframe::fromAABB(const AABB &bb) {

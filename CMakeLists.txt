@@ -18,7 +18,7 @@ add_executable(Project3
         PointLight.cpp PointLight.h
         Time.cpp Time.h
         objects/Node.h
-        objects/Geometry.h
+        objects/Geometry.h objects/Geometry.cpp
         objects/Mesh.cpp objects/Mesh.h
         objects/Transform.cpp objects/Transform.h
         objects/Trackball.cpp objects/Trackball.h

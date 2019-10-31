@@ -20,6 +20,8 @@ public:
 
     void update() override;
 
+    void cull(const glm::mat4 &view_proj) override;
+
     void addChild(NodePtr child);
 
 protected:

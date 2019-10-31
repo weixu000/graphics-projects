@@ -21,3 +21,15 @@ void Transform::update() {
         n->update();
     }
 }
+
+void Transform::cull(const glm::mat4 &view_proj) {
+    auto m = view_proj * model;
+    std::list<NodePtr>::size_type num_culled = 0;
+    for (auto &n:children) {
+        n->cull(m);
+        if (n->culled()) {
+            ++num_culled;
+        }
+    }
+    _culled = num_culled == children.size();
+}

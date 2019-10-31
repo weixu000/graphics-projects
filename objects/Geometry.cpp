@@ -16,20 +16,19 @@ AABB::AABB(const glm::vec3 &minVal, const glm::vec3 &maxVal) {
 
 void Geometry::cull(const glm::mat4 &view_proj) {
     auto bb = boundingBox();
-    glm::mat4 blow_p(glm::vec4(bb.vertices[0], 1.0f),
-                     glm::vec4(bb.vertices[1], 1.0f),
-                     glm::vec4(bb.vertices[2], 1.0f),
-                     glm::vec4(bb.vertices[3], 1.0f));
-
-    glm::mat4 upper_p(glm::vec4(bb.vertices[4], 1.0f),
-                      glm::vec4(bb.vertices[5], 1.0f),
-                      glm::vec4(bb.vertices[6], 1.0f),
-                      glm::vec4(bb.vertices[7], 1.0f));
-    for (auto i = 0; i < 3; ++i) {
-        if ((upper_p[0][i] > upper_p[0].w && upper_p[1][i] > upper_p[1].w &&
-             upper_p[2][i] > upper_p[2].w && upper_p[3][i] > upper_p[1].w) ||
-            (upper_p[0][i] < -upper_p[0].w && upper_p[1][i] < -upper_p[1].w &&
-             upper_p[2][i] < -upper_p[2].w && upper_p[3][i] < -upper_p[1].w)) {
+    std::array<glm::vec4, 8> vertices;
+    for (size_t i = 0; i < 8; ++i) {
+        vertices[i] = view_proj * glm::vec4(bb.vertices[i], 1.0f);
+    }
+    for (size_t i = 0; i < 3; ++i) {
+        size_t j;
+        for (j = 0; j < 8 && vertices[j][i] > vertices[j].w; ++j) {}
+        if (j == 8) {
+            _culled = true;
+            return;
+        }
+        for (j = 0; j < 8 && vertices[j][i] < -vertices[j].w; ++j) {}
+        if (j == 8) {
             _culled = true;
             return;
         }

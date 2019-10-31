@@ -20,7 +20,7 @@ public:
      *  1----2
      *
      */
-    std::array<glm::vec3, 8> vertices;
+    std::array<glm::vec3, 8> vertices{};
 };
 
 
@@ -28,8 +28,7 @@ class Geometry : public Node {
 public:
     virtual AABB boundingBox() const = 0;
 
-protected:
-    std::shared_ptr<Shader> shader;
+    void cull(const glm::mat4 &view_proj) override;
 };
 
 #endif
