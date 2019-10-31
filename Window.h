@@ -15,6 +15,7 @@
 #include <glm/gtx/transform.hpp>
 
 #include "objects/Node.h"
+#include "objects/Camera.h"
 #include "objects/components/geometries/Robot.h"
 #include "objects/components/Trackball.h"
 #include "shaders/Shader.h"
@@ -22,12 +23,9 @@
 
 class Window : public GLContext {
 public:
-    glm::vec3 eye{0, 0, 20}, center{0, 0, 0}, up{0, 1, 0};
-    glm::mat4 projection = glm::perspective(glm::radians(60.0f),
-                                            float(width) / float(height), 1.0f, 1000.0f),
-            view = glm::lookAt(Window::eye, Window::center, Window::up);
-
     Node scene;
+
+    Camera *cam;
 
     std::shared_ptr<Shader> normalShader, phongShader;
 

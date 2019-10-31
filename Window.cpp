@@ -61,15 +61,20 @@ void Window::initializeObjects() {
 
     for (auto i = -5; i < 5; ++i) {
         for (auto j = -5; j < 5; ++j) {
-            Node grid(
+            auto grid = std::make_unique<Node>(
                     glm::translate(glm::vec3(i, 0, j)) * glm::scale(glm::vec3(0.2f, 0.2f, 0.2f)));
-            grid.addComponent(robot);
+            grid->addComponent(robot);
 
-            scene.addChild(grid);
+            scene.addChild(std::move(grid));
         }
     }
 
     scene.transform = trackball = std::make_shared<Trackball>();
+
+    glm::vec3 eye(0, 0, 20);
+    glm::mat4 projection = glm::perspective(glm::radians(60.0f),
+                                            float(width) / float(height), 1.0f, 1000.0f);
+    cam = static_cast<Camera *>(scene.addChild(std::make_unique<Camera>(projection, glm::translate(eye))));
 }
 
 Window::~Window() {}
@@ -86,8 +91,8 @@ void Window::resizeCallback(int width, int height) {
         glViewport(0, 0, width, height);
 
         // Set the projection matrix.
-        projection = glm::perspective(glm::radians(60.0f),
-                                      float(width) / float(height), 1.0f, 1000.0f);
+        cam->projection = glm::perspective(glm::radians(60.0f),
+                                           float(width) / float(height), 1.0f, 1000.0f);
     }
 }
 
@@ -96,13 +101,14 @@ void Window::update() {
 }
 
 void Window::draw() {
-    scene.cull(projection * view);
+    cam->setup();
+    scene.cull(cam->projection * cam->view);
 
     // Clear the color and depth buffers.
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Render the object.
-    scene.draw(glm::mat4(1.0f), projection, view, eye);
+    scene.draw(glm::mat4(1.0f), cam->projection, cam->view, cam->eye);
 
     // Gets events, including input such as keyboard and mouse or window resizing.
     glfwPollEvents();

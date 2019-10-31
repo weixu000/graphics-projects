@@ -24,7 +24,11 @@ public:
 
     bool culled() const { return _culled; }
 
-    Node *addChild(Node child);
+    using NodePtr = std::unique_ptr<Node>;
+
+    Node *addChild(NodePtr child);
+
+    Node *parent() const { return _parent; }
 
     using ComponentPtr = std::shared_ptr<Component>;
 
@@ -35,7 +39,9 @@ public:
 protected:
     bool _culled = false;
 
-    std::list<Node> children;
+    Node *_parent = nullptr;
+
+    std::list<NodePtr> children;
     std::list<ComponentPtr> components;
 };
 

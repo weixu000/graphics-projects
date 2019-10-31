@@ -17,8 +17,8 @@ void Node::draw(const glm::mat4 &world, const glm::mat4 &projection, const glm::
     }
 
     for (auto &n:children) {
-        if (!n.culled()) {
-            n.draw(m, projection, view, eye);
+        if (!n->culled()) {
+            n->draw(m, projection, view, eye);
         }
     }
 }
@@ -29,7 +29,7 @@ void Node::update() {
     }
 
     for (auto &n:children) {
-        n.update();
+        n->update();
     }
 }
 
@@ -44,7 +44,7 @@ bool Node::cull(const glm::mat4 &view_proj) {
     }
 
     for (auto &n:children) {
-        if (n.cull(m)) {
+        if (n->cull(m)) {
             ++num_culled;
         }
     }
@@ -52,9 +52,9 @@ bool Node::cull(const glm::mat4 &view_proj) {
     return _culled;
 }
 
-Node *Node::addChild(Node child) {
+Node *Node::addChild(NodePtr child) {
     children.push_back(std::move(child));
-    return &children.back();
+    return children.back().get();
 }
 
 void Node::addComponent(Node::ComponentPtr component) {
