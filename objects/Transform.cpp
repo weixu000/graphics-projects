@@ -3,10 +3,12 @@
 Transform::Transform(const glm::mat4 &m)
         : model(m) {}
 
-void Transform::draw(const glm::mat4 &world) {
+void Transform::draw(const glm::mat4 &world, const glm::mat4 &projection, const glm::mat4 &view, const glm::vec3 &eye) {
     auto m = world * model;
     for (auto &n:children) {
-        n->draw(m);
+        if (!n->culled()) {
+            n->draw(m, projection, view, eye);
+        }
     }
 }
 

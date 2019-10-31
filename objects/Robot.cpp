@@ -2,6 +2,7 @@
 
 #include "Robot.h"
 #include "../Time.h"
+#include "Wireframe.h"
 
 Robot::Robot()
         : root(std::make_shared<Transform>()),
@@ -12,6 +13,7 @@ Robot::Robot()
           body(std::make_shared<Mesh>(Mesh::fromObjFile("meshes/Robot-parts-2018/body_s.obj"))) {
 
     root->addChild(body);
+    root->addChild(std::make_shared<Wireframe>(Wireframe::fromAABB(boundingBox())));
 
     initHead();
     initArms();
@@ -90,17 +92,16 @@ void Robot::initLegs() {
     root->addChild(leg_r_m);
 }
 
-void Robot::draw(const glm::mat4 &world) {
-    root->draw(world);
+void Robot::draw(const glm::mat4 &world, const glm::mat4 &projection, const glm::mat4 &view, const glm::vec3 &eye) {
+    root->draw(world, projection, view, eye);
 }
 
 void Robot::useShader(const std::shared_ptr<Shader> &s) {
-    Geometry::useShader(s);
-    antenna->useShader(shader);
-    eyeball->useShader(shader);
-    head->useShader(shader);
-    limb->useShader(shader);
-    body->useShader(shader);
+    antenna->useShader(s);
+    eyeball->useShader(s);
+    head->useShader(s);
+    limb->useShader(s);
+    body->useShader(s);
 }
 
 void Robot::update() {

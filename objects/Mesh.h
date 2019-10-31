@@ -15,13 +15,14 @@
 #include <string>
 
 #include "Geometry.h"
+#include "../shaders/Shader.h"
 #include "../Material.h"
 
 class Mesh : public Geometry {
 public:
     Mesh() = default;
 
-    Mesh(std::vector<glm::vec3> _attrs, std::vector<GLuint> _indices);
+    Mesh(const std::vector<glm::vec3> &attrs, const std::vector<GLuint> &indices);
 
     ~Mesh() override;
 
@@ -37,9 +38,12 @@ public:
 
     static Mesh cube();
 
-    void draw(const glm::mat4 &world) override;
+    void useShader(const std::shared_ptr<Shader> &s) { shader = s; }
 
-    const glm::vec3 &minBound() const { return minVal; }
+    void
+    draw(const glm::mat4 &world, const glm::mat4 &projection, const glm::mat4 &view, const glm::vec3 &eye) override;
+
+    AABB boundingBox() const override { return AABB{_minVal, _maxVal}; }
 
     const glm::vec3 &minVal() const { return _minVal; }
 
@@ -58,6 +62,8 @@ private:
 
     glm::vec3 _minVal, _maxVal, _center;
     float _scale;
+
+    std::shared_ptr<Shader> shader;
 
     void computeStatistics(const std::vector<glm::vec3> &attrs, const std::vector<GLuint> &indices);
 };

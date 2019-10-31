@@ -10,11 +10,14 @@ class Robot : public Geometry {
 public:
     Robot();
 
-    void draw(const glm::mat4 &world) override;
+    void
+    draw(const glm::mat4 &world, const glm::mat4 &projection, const glm::mat4 &view, const glm::vec3 &eye) override;
 
     void update() override;
 
-    void useShader(const std::shared_ptr<Shader> &s) override;
+    void useShader(const std::shared_ptr<Shader> &s);
+
+    AABB boundingBox() const override { return bb; }
 
 private:
     std::shared_ptr<Transform> root;
@@ -22,6 +25,8 @@ private:
     std::shared_ptr<Mesh> antenna, eyeball, head, body, limb;
 
     std::shared_ptr<Transform> headControl, leftArmControl, rightArmControl, leftLegControl, rightLegControl;
+
+    const AABB bb{glm::vec3(-1.6f, -3.0f, -1.5f), glm::vec3(1.6f, 3.0f, 1.5f)};
 
     void initHead();
 

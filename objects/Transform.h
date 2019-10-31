@@ -15,7 +15,8 @@ public:
 
     glm::mat4 model;
 
-    void draw(const glm::mat4 &world) override;
+    void
+    draw(const glm::mat4 &world, const glm::mat4 &projection, const glm::mat4 &view, const glm::vec3 &eye) override;
 
     void update() override;
 

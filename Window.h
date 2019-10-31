@@ -29,7 +29,7 @@ public:
 
     std::shared_ptr<Transform> scene;
 
-    std::shared_ptr<Shader> normalShader, phongShader, curShader;
+    std::shared_ptr<Shader> normalShader, phongShader;
 
     std::shared_ptr<Trackball> trackball;
 

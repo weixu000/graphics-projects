@@ -53,8 +53,6 @@ void Window::initializeProgram() {
         std::cerr << "Failed to initialize shader program" << std::endl;
         exit(EXIT_FAILURE);
     }
-
-    curShader = normalShader;
 }
 
 void Window::initializeObjects() {
@@ -103,14 +101,8 @@ void Window::draw() {
     // Clear the color and depth buffers.
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Specify the values of the uniform variables we are going to use.
-    curShader->use();
-    curShader->setUniformMatrix4("projection", projection);
-    curShader->setUniformMatrix4("view", view);
-    curShader->setUniform3f("viewPos", eye);
-
     // Render the object.
-    scene->draw(glm::mat4(1.0f));
+    scene->draw(glm::mat4(1.0f), projection, view, eye);
 
     // Gets events, including input such as keyboard and mouse or window resizing.
     glfwPollEvents();
@@ -125,9 +117,6 @@ void Window::keyCallback(int key, int scancode, int action, int mods) {
             case GLFW_KEY_ESCAPE:
                 // Close the window. This causes the program to also terminate.
                 glfwSetWindowShouldClose(window, GL_TRUE);
-                break;
-            case GLFW_KEY_N:
-                curShader = (curShader == normalShader) ? phongShader : normalShader;
                 break;
             default:
                 break;

@@ -7,7 +7,7 @@
 #include "Mesh.h"
 #include "../shaders/Shader.h"
 
-Mesh::Mesh(std::vector<glm::vec3> attrs, std::vector<GLuint> indices) {
+Mesh::Mesh(const std::vector<glm::vec3> &attrs, const std::vector<GLuint> &indices) {
     count = indices.size();
 
     computeStatistics(attrs, indices);
@@ -74,11 +74,15 @@ Mesh &Mesh::operator=(Mesh &&other) {
     return *this;
 }
 
-void Mesh::draw(const glm::mat4 &world) {
+void Mesh::draw(const glm::mat4 &world, const glm::mat4 &projection, const glm::mat4 &view, const glm::vec3 &eye) {
     if (mat) {
         mat->setUniform(*shader);
     }
     assert(shader);
+    shader->use();
+    shader->setUniformMatrix4("projection", projection);
+    shader->setUniformMatrix4("view", view);
+    shader->setUniform3f("viewPos", eye);
     shader->setUniformMatrix4("model", world);
     // Bind to the VAO.
     glBindVertexArray(vao);

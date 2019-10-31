@@ -22,5 +22,6 @@ add_executable(Project3
         objects/Mesh.cpp objects/Mesh.h
         objects/Transform.cpp objects/Transform.h
         objects/Trackball.cpp objects/Trackball.h
-        objects/Robot.cpp objects/Robot.h)
+        objects/Robot.cpp objects/Robot.h
+        objects/Wireframe.cpp objects/Wireframe.h)
 target_link_libraries(Project3 GLEW::glew_s GLFW3::GLFW3 glm)
