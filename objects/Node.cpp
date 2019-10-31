@@ -24,6 +24,8 @@ void Node::draw(const glm::mat4 &world, const glm::mat4 &projection, const glm::
 }
 
 void Node::update() {
+    transform->update();
+
     for (auto &n:components) {
         n->update();
     }
