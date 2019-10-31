@@ -15,14 +15,10 @@ public:
 
     void stopRotate();
 
-    enum class MoveDirection {
-        Forward,
-        Backward,
-        Left,
-        Right,
-    };
+    void update();
 
-    void move(MoveDirection direction);
+    bool forward = false, left = false, backward = false, right = false, up = false, down = false;
+    bool local = true;
 
 private:
     bool startedRotate = false;

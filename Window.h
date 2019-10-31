@@ -30,7 +30,7 @@ public:
     std::shared_ptr<Shader> normalShader, phongShader;
 
     std::shared_ptr<FreeFlying> camCtl;
-    bool W = false, A = false, S = false, D = false;
+    bool shouldCull = true;
 
     std::shared_ptr<Robot> robot;
 

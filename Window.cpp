@@ -98,23 +98,14 @@ void Window::resizeCallback(int width, int height) {
 
 void Window::update() {
     scene.update();
-    if (W) {
-        camCtl->move(FreeFlying::MoveDirection::Forward);
-    }
-    if (A) {
-        camCtl->move(FreeFlying::MoveDirection::Left);
-    }
-    if (S) {
-        camCtl->move(FreeFlying::MoveDirection::Backward);
-    }
-    if (D) {
-        camCtl->move(FreeFlying::MoveDirection::Right);
-    }
 }
 
 void Window::draw() {
     cam->setup();
-    scene.cull(cam->projection * cam->view);
+
+    if (shouldCull) {
+        scene.cull(cam->projection * cam->view);
+    }
 
     // Clear the color and depth buffers.
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -135,16 +126,29 @@ void Window::keyCallback(int key, int scancode, int action, int mods) {
                 glfwSetWindowShouldClose(window, GL_TRUE);
                 break;
             case GLFW_KEY_W:
-                W = true;
+                camCtl->forward = true;
                 break;
             case GLFW_KEY_A:
-                A = true;
+                camCtl->left = true;
                 break;
             case GLFW_KEY_S:
-                S = true;
+                camCtl->backward = true;
                 break;
             case GLFW_KEY_D:
-                D = true;
+                camCtl->right = true;
+                break;
+            case GLFW_KEY_Q:
+                camCtl->up = true;
+                break;
+            case GLFW_KEY_E:
+                camCtl->down = true;
+                break;
+            case GLFW_KEY_LEFT_SHIFT:
+                camCtl->local = false;
+                break;
+            case GLFW_KEY_C:
+                shouldCull = !shouldCull;
+                std::cout << "shouldCull: " << shouldCull << std::endl;
                 break;
             default:
                 break;
@@ -152,16 +156,25 @@ void Window::keyCallback(int key, int scancode, int action, int mods) {
     } else if (action == GLFW_RELEASE) {
         switch (key) {
             case GLFW_KEY_W:
-                W = false;
+                camCtl->forward = false;
                 break;
             case GLFW_KEY_A:
-                A = false;
+                camCtl->left = false;
                 break;
             case GLFW_KEY_S:
-                S = false;
+                camCtl->backward = false;
                 break;
             case GLFW_KEY_D:
-                D = false;
+                camCtl->right = false;
+                break;
+            case GLFW_KEY_Q:
+                camCtl->up = false;
+                break;
+            case GLFW_KEY_E:
+                camCtl->down = false;
+                break;
+            case GLFW_KEY_LEFT_SHIFT:
+                camCtl->local = true;
                 break;
             default:
                 break;

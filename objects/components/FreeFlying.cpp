@@ -24,20 +24,30 @@ void FreeFlying::rotate(float x, float y) {
     }
 }
 
-void FreeFlying::move(FreeFlying::MoveDirection direction) {
-    const auto sensitivity = 5.0f * Time::delta();
-    switch (direction) {
-        case MoveDirection::Forward:
-            model = glm::translate(-sensitivity * glm::vec3(model[2])) * model;
-            break;
-        case MoveDirection::Backward:
-            model = glm::translate(sensitivity * glm::vec3(model[2])) * model;
-            break;
-        case MoveDirection::Left:
-            model = glm::translate(-sensitivity * glm::vec3(model[0])) * model;
-            break;
-        case MoveDirection::Right:
-            model = glm::translate(sensitivity * glm::vec3(model[0])) * model;
-            break;
+void FreeFlying::update() {
+    const auto sensitivity = 10.0f * Time::delta();
+    if (forward) {
+        auto vec = local ? glm::vec3(model[2]) : glm::vec3(0.0f, 0.0f, 1.0f);
+        model = glm::translate(-sensitivity * vec) * model;
+    }
+    if (backward) {
+        auto vec = local ? glm::vec3(model[2]) : glm::vec3(0.0f, 0.0f, 1.0f);
+        model = glm::translate(sensitivity * vec) * model;
+    }
+    if (left) {
+        auto vec = local ? glm::vec3(model[0]) : glm::vec3(1.0f, 0.0f, 0.0f);
+        model = glm::translate(-sensitivity * vec) * model;
+    }
+    if (right) {
+        auto vec = local ? glm::vec3(model[0]) : glm::vec3(1.0f, 0.0f, 0.0f);
+        model = glm::translate(sensitivity * vec) * model;
+    }
+    if (up) {
+        auto vec = local ? glm::vec3(model[1]) : glm::vec3(0.0f, 1.0f, 0.0f);
+        model = glm::translate(sensitivity * vec) * model;
+    }
+    if (down) {
+        auto vec = local ? glm::vec3(model[1]) : glm::vec3(0.0f, 1.0f, 0.0f);
+        model = glm::translate(-sensitivity * vec) * model;
     }
 }
