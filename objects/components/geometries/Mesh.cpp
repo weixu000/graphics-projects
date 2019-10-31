@@ -5,7 +5,7 @@
 #include <numeric>
 
 #include "Mesh.h"
-#include "../shaders/Shader.h"
+#include "../../../shaders/Shader.h"
 
 Mesh::Mesh(const std::vector<glm::vec3> &attrs, const std::vector<GLuint> &indices) {
     count = indices.size();

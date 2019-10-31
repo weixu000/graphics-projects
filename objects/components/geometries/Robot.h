@@ -1,8 +1,9 @@
 #ifndef ROBOT_H
 #define ROBOT_H
 
+#include "../../Node.h"
 #include "Geometry.h"
-#include "Transform.h"
+#include "../Transform.h"
 #include "Mesh.h"
 
 
@@ -20,13 +21,13 @@ public:
     AABB boundingBox() const override { return bb; }
 
 private:
-    std::shared_ptr<Transform> root;
+    Node root;
 
     std::shared_ptr<Mesh> antenna, eyeball, head, body, limb;
 
     std::shared_ptr<Transform> headControl, leftArmControl, rightArmControl, leftLegControl, rightLegControl;
 
-    const AABB bb{glm::vec3(-1.6f, -3.0f, -1.5f), glm::vec3(1.6f, 3.0f, 1.5f)};
+    const AABB bb{glm::vec3(-1.6f, -2.2f, -1.5f), glm::vec3(1.6f, 2.5f, 1.5f)};
 
     void initHead();
 

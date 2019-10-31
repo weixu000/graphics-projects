@@ -1,9 +1,9 @@
-#ifndef _OBJECT_H_
-#define _OBJECT_H_
+#ifndef _GEOMETRY_H
+#define _GEOMETRY_H
 
 #include <memory>
 
-#include "Node.h"
+#include "../Component.h"
 
 class AABB {
 public:
@@ -24,11 +24,11 @@ public:
 };
 
 
-class Geometry : public Node {
+class Geometry : public Component {
 public:
     virtual AABB boundingBox() const = 0;
 
-    void cull(const glm::mat4 &view_proj) override;
+    bool cull(const glm::mat4 &view_proj) override;
 };
 
 #endif

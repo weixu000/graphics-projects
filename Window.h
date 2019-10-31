@@ -14,9 +14,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 
-#include "objects/Transform.h"
-#include "objects/Robot.h"
-#include "objects/Trackball.h"
+#include "objects/Node.h"
+#include "objects/components/geometries/Robot.h"
+#include "objects/components/Trackball.h"
 #include "shaders/Shader.h"
 #include "GLContext.h"
 
@@ -27,7 +27,7 @@ public:
                                             float(width) / float(height), 1.0f, 1000.0f),
             view = glm::lookAt(Window::eye, Window::center, Window::up);
 
-    std::shared_ptr<Transform> scene;
+    Node scene;
 
     std::shared_ptr<Shader> normalShader, phongShader;
 

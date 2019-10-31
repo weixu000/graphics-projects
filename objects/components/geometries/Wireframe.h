@@ -14,7 +14,7 @@
 #include <string>
 
 #include "Geometry.h"
-#include "../shaders/Shader.h"
+#include "../../../shaders/Shader.h"
 
 
 class Wireframe : public Geometry {

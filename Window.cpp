@@ -56,22 +56,20 @@ void Window::initializeProgram() {
 }
 
 void Window::initializeObjects() {
-    trackball = std::make_shared<Trackball>();
     robot = std::make_shared<Robot>();
     robot->useShader(normalShader);
 
     for (auto i = -5; i < 5; ++i) {
         for (auto j = -5; j < 5; ++j) {
-            auto grid = std::make_shared<Transform>(
+            Node grid(
                     glm::translate(glm::vec3(i, 0, j)) * glm::scale(glm::vec3(0.2f, 0.2f, 0.2f)));
-            grid->addChild(robot);
+            grid.addComponent(robot);
 
-            trackball->addChild(grid);
+            scene.addChild(grid);
         }
     }
 
-    scene = std::make_shared<Transform>();
-    scene->addChild(trackball);
+    scene.transform = trackball = std::make_shared<Trackball>();
 }
 
 Window::~Window() {}
@@ -94,17 +92,17 @@ void Window::resizeCallback(int width, int height) {
 }
 
 void Window::update() {
-    scene->update();
+    scene.update();
 }
 
 void Window::draw() {
-    scene->cull(projection * view);
+    scene.cull(projection * view);
 
     // Clear the color and depth buffers.
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Render the object.
-    scene->draw(glm::mat4(1.0f), projection, view, eye);
+    scene.draw(glm::mat4(1.0f), projection, view, eye);
 
     // Gets events, including input such as keyboard and mouse or window resizing.
     glfwPollEvents();

@@ -14,7 +14,7 @@ AABB::AABB(const glm::vec3 &minVal, const glm::vec3 &maxVal) {
     vertices[4].y = vertices[5].y = vertices[6].y = vertices[7].y = maxVal.y;
 }
 
-void Geometry::cull(const glm::mat4 &view_proj) {
+bool Geometry::cull(const glm::mat4 &view_proj) {
     auto bb = boundingBox();
     std::array<glm::vec4, 8> vertices;
     for (size_t i = 0; i < 8; ++i) {
@@ -24,14 +24,12 @@ void Geometry::cull(const glm::mat4 &view_proj) {
         size_t j;
         for (j = 0; j < 8 && vertices[j][i] > vertices[j].w; ++j) {}
         if (j == 8) {
-            _culled = true;
-            return;
+            return true;
         }
         for (j = 0; j < 8 && vertices[j][i] < -vertices[j].w; ++j) {}
         if (j == 8) {
-            _culled = true;
-            return;
+            return true;
         }
     }
-    _culled = false;
+    return false;
 }

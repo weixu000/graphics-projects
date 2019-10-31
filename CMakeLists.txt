@@ -17,11 +17,12 @@ add_executable(Project3
         Material.cpp Material.h
         PointLight.cpp PointLight.h
         Time.cpp Time.h
-        objects/Node.h
-        objects/Geometry.h objects/Geometry.cpp
-        objects/Mesh.cpp objects/Mesh.h
-        objects/Transform.cpp objects/Transform.h
-        objects/Trackball.cpp objects/Trackball.h
-        objects/Robot.cpp objects/Robot.h
-        objects/Wireframe.cpp objects/Wireframe.h)
+        objects/Node.h objects/Node.cpp
+        objects/components/Component.h
+        objects/components/Transform.cpp objects/components/Transform.h
+        objects/components/Trackball.cpp objects/components/Trackball.h
+        objects/components/geometries/Geometry.h objects/components/geometries/Geometry.cpp
+        objects/components/geometries/Mesh.cpp objects/components/geometries/Mesh.h
+        objects/components/geometries/Robot.cpp objects/components/geometries/Robot.h
+        objects/components/geometries/Wireframe.cpp objects/components/geometries/Wireframe.h)
 target_link_libraries(Project3 GLEW::glew_s GLFW3::GLFW3 glm)
