@@ -2,7 +2,7 @@
 #include <glm/gtx/transform.hpp>
 
 #include "HumanoidAnimation.h"
-#include "../../Time.h"
+#include "../Time.h"
 
 HumanoidAnimation::HumanoidAnimation()
         : headControl(std::make_shared<Transform>()),

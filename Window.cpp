@@ -1,9 +1,8 @@
-#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
 #include "Window.h"
 #include "Time.h"
-#include "objects/components/HumanoidAnimation.h"
+#include "components/HumanoidAnimation.h"
 
 Window::Window() {
     setupCallbacks();

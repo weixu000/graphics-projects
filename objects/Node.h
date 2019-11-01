@@ -5,8 +5,8 @@
 #include <memory>
 #include <list>
 
-#include "components/Component.h"
-#include "components/Transform.h"
+#include "../components/Component.h"
+#include "../components/Transform.h"
 
 class Node {
 public:

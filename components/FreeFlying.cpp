@@ -3,7 +3,7 @@
 #include <glm/gtx/transform.hpp>
 
 #include "FreeFlying.h"
-#include "../../Time.h"
+#include "../Time.h"
 
 void FreeFlying::startRotate(float x, float y) {
     startedRotate = true;

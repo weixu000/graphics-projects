@@ -1,7 +1,7 @@
 #ifndef ROBOT_H
 #define ROBOT_H
 
-#include "../../Node.h"
+#include "../../objects/Node.h"
 #include "Geometry.h"
 #include "../Transform.h"
 #include "Mesh.h"

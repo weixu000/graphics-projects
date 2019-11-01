@@ -15,8 +15,8 @@
 #include <string>
 
 #include "Geometry.h"
-#include "../../../shaders/Shader.h"
-#include "../../../Material.h"
+#include "../../shaders/Shader.h"
+#include "../../Material.h"
 
 class Mesh : public Geometry {
 public:

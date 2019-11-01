@@ -16,8 +16,8 @@
 
 #include "objects/Node.h"
 #include "objects/Camera.h"
-#include "objects/components/geometries/Robot.h"
-#include "objects/components/FreeFlying.h"
+#include "components/geometries/Robot.h"
+#include "components/FreeFlying.h"
 #include "shaders/Shader.h"
 #include "GLContext.h"
 
