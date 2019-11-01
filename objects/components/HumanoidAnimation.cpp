@@ -14,28 +14,27 @@ HumanoidAnimation::HumanoidAnimation()
 }
 
 void HumanoidAnimation::update() {
-    static float left_leg = 0.0f, right_leg = 0.0f;
+    static auto deg = 0.0f;
     static auto dir = true;
+    const auto speed = 3.0f;
 
     if (dir) {
-        left_leg += 1.0f * Time::delta();
-        right_leg += 1.0f * Time::delta();
+        deg += speed * Time::delta();
     } else {
-        left_leg -= 1.0f * Time::delta();
-        right_leg -= 1.0f * Time::delta();
+        deg -= speed * Time::delta();
     }
 
-    if (left_leg > glm::pi<float>() / 4) {
-        left_leg = glm::pi<float>() / 4;
+    if (deg > glm::pi<float>() / 4) {
+        deg = glm::pi<float>() / 4;
         dir = false;
-    } else if (left_leg < -glm::pi<float>() / 4) {
-        left_leg = -glm::pi<float>() / 4;
+    } else if (deg < -glm::pi<float>() / 4) {
+        deg = -glm::pi<float>() / 4;
         dir = true;
     }
 
-    leftArmControl->model = glm::rotate(right_leg, glm::vec3(1.0f, 0.0f, 0.0f));
-    rightArmControl->model = glm::rotate(left_leg, glm::vec3(-1.0f, 0.0f, 0.0f));
+    leftArmControl->model = glm::rotate(-deg, glm::vec3(1.0f, 0.0f, 0.0f));
+    rightArmControl->model = glm::rotate(deg, glm::vec3(1.0f, 0.0f, 0.0f));
 
-    leftLegControl->model = glm::rotate(left_leg, glm::vec3(1.0f, 0.0f, 0.0f));
-    rightLegControl->model = glm::rotate(right_leg, glm::vec3(-1.0f, 0.0f, 0.0f));
+    leftLegControl->model = glm::rotate(deg, glm::vec3(1.0f, 0.0f, 0.0f));
+    rightLegControl->model = glm::rotate(-deg, glm::vec3(1.0f, 0.0f, 0.0f));
 }
