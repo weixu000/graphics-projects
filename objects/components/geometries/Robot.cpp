@@ -36,57 +36,50 @@ void Robot::initHead(std::shared_ptr<Transform> headCtl) {
     auto eyeball_r_m = std::make_unique<Node>(glm::eulerAngleY(glm::pi<float>() * -0.15f) * eyeball_m);
     eyeball_r_m->addComponent(eyeball);
 
-    auto control_node = std::make_unique<Node>(std::move(headCtl));
-    control_node->addComponent(head);
-    control_node->addChild(std::move(antenna_l_m));
-    control_node->addChild(std::move(antenna_r_m));
-    control_node->addChild(std::move(eyeball_l_m));
-    control_node->addChild(std::move(eyeball_r_m));
+    auto control = std::make_unique<Node>(std::move(headCtl));
+    control->addComponent(head);
+    control->addChild(std::move(antenna_l_m));
+    control->addChild(std::move(antenna_r_m));
+    control->addChild(std::move(eyeball_l_m));
+    control->addChild(std::move(eyeball_r_m));
 
     auto head_m = std::make_unique<Node>(glm::translate(glm::vec3(0.0f, 1.2f, 0.0f)));
-    head_m->addChild(std::move(control_node));
+    head_m->addChild(std::move(control));
     root.addChild(std::move(head_m));
 }
 
 void Robot::initArms(std::shared_ptr<Transform> leftCtl, std::shared_ptr<Transform> rightCtl) {
-    auto arm_m = std::make_shared<Transform>(
+    auto arm = std::make_unique<Node>(
             glm::translate(glm::vec3(0.0f, -0.8f, 0.0f)) * glm::scale(glm::vec3(1.0f, 2.0f, 1.0f)));
-
-    auto arm = std::make_unique<Node>(arm_m);
     arm->addComponent(limb);
-    auto left_node = std::make_unique<Node>(std::move(leftCtl));
-    left_node->addChild(std::move(arm));
+
+    auto arm_l = std::make_unique<Node>(std::move(leftCtl));
+    arm_l->addChild(arm->copy());
     auto arm_l_b = std::make_unique<Node>(glm::translate(glm::vec3(-1.4f, 0.6f, 0.0f)));
-    arm_l_b->addChild(std::move(left_node));
+    arm_l_b->addChild(std::move(arm_l));
 
-    arm = std::make_unique<Node>(arm_m);
-    arm->addComponent(limb);
-    auto right_node = std::make_unique<Node>(std::move(rightCtl));
-    right_node->addChild(std::move(arm));
+    auto arm_r = std::make_unique<Node>(std::move(rightCtl));
+    arm_r->addChild(std::move(arm));
     auto arm_r_b = std::make_unique<Node>(glm::translate(glm::vec3(1.4f, 0.6f, 0.0f)));
-    arm_r_b->addChild(std::move(right_node));
+    arm_r_b->addChild(std::move(arm_r));
 
     root.addChild(std::move(arm_l_b));
     root.addChild(std::move(arm_r_b));
 }
 
 void Robot::initLegs(std::shared_ptr<Transform> leftCtl, std::shared_ptr<Transform> rightCtl) {
-    auto leg_m = std::make_shared<Transform>(
-            glm::translate(glm::vec3(0.0f, -0.7f, 0.0f)));
-
-    auto leg = std::make_unique<Node>(leg_m);
+    auto leg = std::make_unique<Node>(glm::translate(glm::vec3(0.0f, -0.7f, 0.0f)));
     leg->addComponent(limb);
-    auto left_node = std::make_unique<Node>(std::move(leftCtl));
-    left_node->addChild(std::move(leg));
+
+    auto leg_l = std::make_unique<Node>(std::move(leftCtl));
+    leg_l->addChild(leg->copy());
     auto leg_l_m = std::make_unique<Node>(glm::translate(glm::vec3(-0.5f, -1.0f, 0.0f)));
-    leg_l_m->addChild(std::move(left_node));
+    leg_l_m->addChild(std::move(leg_l));
 
-    leg = std::make_unique<Node>(leg_m);
-    leg->addComponent(limb);
-    auto right_node = std::make_unique<Node>(std::move(rightCtl));
-    right_node->addChild(std::move(leg));
+    auto leg_r = std::make_unique<Node>(std::move(rightCtl));
+    leg_r->addChild(std::move(leg));
     auto leg_r_m = std::make_unique<Node>(glm::translate(glm::vec3(0.5f, -1.0f, 0.0f)));
-    leg_r_m->addChild(std::move(right_node));
+    leg_r_m->addChild(std::move(leg_r));
 
     root.addChild(std::move(leg_l_m));
     root.addChild(std::move(leg_r_m));

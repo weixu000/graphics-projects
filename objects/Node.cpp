@@ -64,3 +64,19 @@ Node *Node::addChild(NodePtr child) {
 void Node::addComponent(Node::ComponentPtr component) {
     components.push_back(std::move(component));
 }
+
+std::unique_ptr<Node> Node::copy() {
+    auto ret = std::make_unique<Node>();
+    doCopy(ret.get());
+    return ret;
+}
+
+void Node::doCopy(Node *dup) {
+    dup->transform = transform;
+    for (auto &n:children) {
+        dup->addChild(n->copy());
+    }
+    for (auto &n:components) {
+        dup->components.push_back(n);
+    }
+}

@@ -36,6 +36,11 @@ public:
 
     std::shared_ptr<Transform> transform;
 
+    // deep copy children
+    // shallow copy components
+    // initialize _culled, _parent
+    virtual std::unique_ptr<Node> copy();
+
 protected:
     bool _culled = false;
 
@@ -43,6 +48,9 @@ protected:
 
     std::list<NodePtr> children;
     std::list<ComponentPtr> components;
+
+    // do actual copy with allocation
+    void doCopy(Node *dup);
 };
 
 

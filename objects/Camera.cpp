@@ -16,3 +16,14 @@ void Camera::setup() {
     view = glm::inverse(cam);
     eye = glm::vec3(cam[3]);
 }
+
+std::unique_ptr<Node> Camera::copy() {
+    auto ret = std::make_unique<Camera>(projection);
+    doCopy(ret.get());
+    return ret;
+}
+
+void Camera::doCopy(Camera *dup) {
+    Node::doCopy(dup);
+    dup->projection = projection;
+}

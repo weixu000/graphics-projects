@@ -15,6 +15,11 @@ public:
     explicit Camera(const glm::mat4 &p, std::shared_ptr<Transform> t);
 
     void setup();
+
+    std::unique_ptr<Node> copy() override;
+
+protected:
+    void doCopy(Camera *dup);
 };
 
 
