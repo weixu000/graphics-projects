@@ -27,7 +27,7 @@ public:
 
     Camera *cam;
 
-    std::shared_ptr<Shader> normalShader, phongShader;
+    std::shared_ptr<Shader> normalShader;
 
     std::shared_ptr<FreeFlying> camCtl;
     bool shouldCull = true;
