@@ -7,7 +7,7 @@ GLContext::GLContext() {
     glfwWindowHint(GLFW_SAMPLES, 4);
 
     // Create the GLFW window.
-    window = glfwCreateWindow(width, height, windowTitle, NULL, NULL);
+    window = glfwCreateWindow(width, height, "GLFW Starter Project", NULL, NULL);
     // Check if the window could not be created.
     if (!window) {
         std::cerr << "Failed to open GLFW window." << std::endl;

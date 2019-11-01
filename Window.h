@@ -32,7 +32,7 @@ public:
     std::shared_ptr<FreeFlying> camCtl;
     bool shouldCull = true;
 
-    std::shared_ptr<Robot> robot;
+    std::vector<Node *> robots; // get number of robots culled
 
     static Window *retrieve(GLFWwindow *w) { return reinterpret_cast<Window *>(glfwGetWindowUserPointer(w)); }
 

@@ -18,7 +18,6 @@ public:
     GLFWwindow *window;
 
     int width = 640, height = 480;
-    const char *windowTitle = "GLFW Starter Project";
 
     GLContext();
 

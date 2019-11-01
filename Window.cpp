@@ -59,17 +59,17 @@ void Window::initializeProgram() {
 void Window::initializeObjects() {
     auto animation = std::make_shared<HumanoidAnimation>();
     scene.addComponent(animation);
-    robot = std::make_shared<Robot>(animation->headControl, animation->leftArmControl, animation->rightArmControl,
-                                    animation->leftLegControl, animation->rightLegControl);
+    auto robot = std::make_shared<Robot>(animation->headControl, animation->leftArmControl, animation->rightArmControl,
+                                         animation->leftLegControl, animation->rightLegControl);
     robot->useShader(normalShader);
 
     for (auto i = -5; i < 5; ++i) {
         for (auto j = -5; j < 5; ++j) {
             auto grid = std::make_unique<Node>(
-                    glm::translate(glm::vec3(i, 0, j)) * glm::scale(glm::vec3(0.2f, 0.2f, 0.2f)));
+                    glm::translate(glm::vec3(i * 2, 0, j * 2)) * glm::scale(glm::vec3(0.2f, 0.2f, 0.2f)));
             grid->addComponent(robot);
 
-            scene.addChild(std::move(grid));
+            robots.push_back(scene.addChild(std::move(grid)));
         }
     }
 
@@ -109,6 +109,13 @@ void Window::draw() {
 
     if (shouldCull) {
         scene.cull(cam->projection * cam->view);
+        size_t num = 0;
+        for (auto n:robots) {
+            if (!n->culled()) {
+                ++num;
+            }
+        }
+        glfwSetWindowTitle(window, ("Not culled: " + std::to_string(num)).c_str());
     }
 
     // Clear the color and depth buffers.
