@@ -27,15 +27,13 @@ private:
 
     std::shared_ptr<Mesh> antenna, eyeball, head, body, limb;
 
-    std::shared_ptr<Transform> headControl, leftArmControl, rightArmControl, leftLegControl, rightLegControl;
-
     const AABB bb{glm::vec3(-1.6f, -2.2f, -1.5f), glm::vec3(1.6f, 2.5f, 1.5f)};
 
-    void initHead();
+    void initHead(std::shared_ptr<Transform> headCtl);
 
-    void initArms();
+    void initArms(std::shared_ptr<Transform> leftCtl, std::shared_ptr<Transform> rightCtl);
 
-    void initLegs();
+    void initLegs(std::shared_ptr<Transform> leftCtl, std::shared_ptr<Transform> rightCtl);
 };
 
 
