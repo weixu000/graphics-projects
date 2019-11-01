@@ -9,12 +9,14 @@
 
 class Robot : public Geometry {
 public:
-    Robot();
+    Robot(std::shared_ptr<Transform> headCtl = std::make_shared<Transform>(),
+          std::shared_ptr<Transform> leftArmCtl = std::make_shared<Transform>(),
+          std::shared_ptr<Transform> rightArmCtl = std::make_shared<Transform>(),
+          std::shared_ptr<Transform> leftLegCtl = std::make_shared<Transform>(),
+          std::shared_ptr<Transform> rightLegCtl = std::make_shared<Transform>());
 
     void
     draw(const glm::mat4 &world, const glm::mat4 &projection, const glm::mat4 &view, const glm::vec3 &eye) override;
-
-    void update() override;
 
     void useShader(const std::shared_ptr<Shader> &s);
 

@@ -1,17 +1,21 @@
 #include <glm/gtx/euler_angles.hpp>
 
 #include "Robot.h"
-#include "../../../Time.h"
 #include "Wireframe.h"
 
-Robot::Robot()
-        : root(std::make_shared<Transform>()),
-          antenna(std::make_shared<Mesh>(Mesh::fromObjFile("meshes/Robot-parts-2018/antenna_s.obj"))),
+Robot::Robot(std::shared_ptr<Transform> headCtl,
+             std::shared_ptr<Transform> leftArmCtl,
+             std::shared_ptr<Transform> rightArmCtl,
+             std::shared_ptr<Transform> leftLegCtl,
+             std::shared_ptr<Transform> rightLegCtl)
+        : antenna(std::make_shared<Mesh>(Mesh::fromObjFile("meshes/Robot-parts-2018/antenna_s.obj"))),
           eyeball(std::make_shared<Mesh>(Mesh::fromObjFile("meshes/Robot-parts-2018/eyeball_s.obj"))),
           head(std::make_shared<Mesh>(Mesh::fromObjFile("meshes/Robot-parts-2018/head_s.obj"))),
           limb(std::make_shared<Mesh>(Mesh::fromObjFile("meshes/Robot-parts-2018/limb_s.obj"))),
-          body(std::make_shared<Mesh>(Mesh::fromObjFile("meshes/Robot-parts-2018/body_s.obj"))) {
-
+          body(std::make_shared<Mesh>(Mesh::fromObjFile("meshes/Robot-parts-2018/body_s.obj"))),
+          headControl(std::move(headCtl)), leftArmControl(std::move(leftArmCtl)),
+          rightArmControl(std::move(rightArmCtl)),
+          leftLegControl(std::move(leftLegCtl)), rightLegControl(std::move(rightLegCtl)) {
     root.addComponent(body);
     root.addComponent(std::make_shared<Wireframe>(Wireframe::fromAABB(boundingBox())));
 
@@ -35,7 +39,6 @@ void Robot::initHead() {
     auto eyeball_r_m = std::make_unique<Node>(glm::eulerAngleY(glm::pi<float>() * -0.15f) * eyeball_m);
     eyeball_r_m->addComponent(eyeball);
 
-    headControl = std::make_shared<Transform>();
     auto control_node = std::make_unique<Node>(headControl);
     control_node->addComponent(head);
     control_node->addChild(std::move(antenna_l_m));
@@ -54,7 +57,6 @@ void Robot::initArms() {
 
     auto arm = std::make_unique<Node>(arm_m);
     arm->addComponent(limb);
-    leftArmControl = std::make_shared<Transform>();
     auto left_node = std::make_unique<Node>(leftArmControl);
     left_node->addChild(std::move(arm));
     auto arm_l_b = std::make_unique<Node>(glm::translate(glm::vec3(-1.4f, 0.6f, 0.0f)));
@@ -62,7 +64,6 @@ void Robot::initArms() {
 
     arm = std::make_unique<Node>(arm_m);
     arm->addComponent(limb);
-    rightArmControl = std::make_shared<Transform>();
     auto right_node = std::make_unique<Node>(rightArmControl);
     right_node->addChild(std::move(arm));
     auto arm_r_b = std::make_unique<Node>(glm::translate(glm::vec3(1.4f, 0.6f, 0.0f)));
@@ -78,7 +79,6 @@ void Robot::initLegs() {
 
     auto leg = std::make_unique<Node>(leg_m);
     leg->addComponent(limb);
-    leftLegControl = std::make_shared<Transform>();
     auto left_node = std::make_unique<Node>(leftLegControl);
     left_node->addChild(std::move(leg));
     auto leg_l_m = std::make_unique<Node>(glm::translate(glm::vec3(-0.5f, -1.0f, 0.0f)));
@@ -86,7 +86,6 @@ void Robot::initLegs() {
 
     leg = std::make_unique<Node>(leg_m);
     leg->addComponent(limb);
-    rightLegControl = std::make_shared<Transform>();
     auto right_node = std::make_unique<Node>(rightLegControl);
     right_node->addChild(std::move(leg));
     auto leg_r_m = std::make_unique<Node>(glm::translate(glm::vec3(0.5f, -1.0f, 0.0f)));
@@ -106,31 +105,4 @@ void Robot::useShader(const std::shared_ptr<Shader> &s) {
     head->useShader(s);
     limb->useShader(s);
     body->useShader(s);
-}
-
-void Robot::update() {
-    static float left_leg = 0.0f, right_leg = 0.0f;
-    static auto dir = true;
-
-    if (dir) {
-        left_leg += 1.0f * Time::delta();
-        right_leg += 1.0f * Time::delta();
-    } else {
-        left_leg -= 1.0f * Time::delta();
-        right_leg -= 1.0f * Time::delta();
-    }
-
-    if (left_leg > glm::pi<float>() / 4) {
-        left_leg = glm::pi<float>() / 4;
-        dir = false;
-    } else if (left_leg < -glm::pi<float>() / 4) {
-        left_leg = -glm::pi<float>() / 4;
-        dir = true;
-    }
-
-    leftArmControl->model = glm::rotate(right_leg, glm::vec3(1.0f, 0.0f, 0.0f));
-    rightArmControl->model = glm::rotate(left_leg, glm::vec3(-1.0f, 0.0f, 0.0f));
-
-    leftLegControl->model = glm::rotate(left_leg, glm::vec3(1.0f, 0.0f, 0.0f));
-    rightLegControl->model = glm::rotate(right_leg, glm::vec3(-1.0f, 0.0f, 0.0f));
 }

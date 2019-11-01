@@ -3,6 +3,7 @@
 
 #include "Window.h"
 #include "Time.h"
+#include "objects/components/HumanoidAnimation.h"
 
 Window::Window() {
     setupCallbacks();
@@ -56,7 +57,10 @@ void Window::initializeProgram() {
 }
 
 void Window::initializeObjects() {
-    robot = std::make_shared<Robot>();
+    auto animation = std::make_shared<HumanoidAnimation>();
+    scene.addComponent(animation);
+    robot = std::make_shared<Robot>(animation->headControl, animation->leftArmControl, animation->rightArmControl,
+                                    animation->leftLegControl, animation->rightLegControl);
     robot->useShader(normalShader);
 
     for (auto i = -5; i < 5; ++i) {

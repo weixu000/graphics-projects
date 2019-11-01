@@ -26,5 +26,6 @@ add_executable(Project3
         objects/components/geometries/Robot.cpp objects/components/geometries/Robot.h
         objects/components/geometries/Wireframe.cpp objects/components/geometries/Wireframe.h
         objects/Camera.cpp objects/Camera.h
-        objects/components/FreeFlying.cpp objects/components/FreeFlying.h)
+        objects/components/FreeFlying.cpp objects/components/FreeFlying.h
+        objects/components/HumanoidAnimation.cpp objects/components/HumanoidAnimation.h)
 target_link_libraries(Project3 GLEW::glew_s GLFW3::GLFW3 glm)
