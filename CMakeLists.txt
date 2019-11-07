@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(Project3)
+project(Project4)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -9,7 +9,7 @@ find_package(GLEW REQUIRED)
 find_package(GLFW3 REQUIRED)
 find_package(GLM REQUIRED)
 
-add_executable(Project3
+add_executable(Project4
         main.cpp
         shaders/Shader.cpp shaders/Shader.h
         Window.cpp Window.h
@@ -27,4 +27,4 @@ add_executable(Project3
         objects/Camera.cpp objects/Camera.h
         components/FreeFlying.cpp components/FreeFlying.h
         components/HumanoidAnimation.cpp components/HumanoidAnimation.h)
-target_link_libraries(Project3 GLEW::glew_s GLFW3::GLFW3 glm)
+target_link_libraries(Project4 GLEW::glew_s GLFW3::GLFW3 glm)
