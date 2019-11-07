@@ -3,6 +3,7 @@
 #include "Window.h"
 #include "Time.h"
 #include "components/HumanoidAnimation.h"
+#include "objects/Skybox.h"
 
 Window::Window() {
     setupCallbacks();
@@ -76,6 +77,8 @@ void Window::initializeObjects() {
 
     camCtl = std::make_shared<FreeFlying>(glm::translate(eye));
     cam = static_cast<Camera *>(scene.addChild(std::make_unique<Camera>(projection, camCtl)));
+
+    scene.addChild(std::make_unique<Skybox>());
 }
 
 Window::~Window() {}

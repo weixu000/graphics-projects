@@ -26,5 +26,7 @@ add_executable(Project4
         components/geometries/Wireframe.cpp components/geometries/Wireframe.h
         objects/Camera.cpp objects/Camera.h
         components/FreeFlying.cpp components/FreeFlying.h
-        components/HumanoidAnimation.cpp components/HumanoidAnimation.h)
+        components/HumanoidAnimation.cpp components/HumanoidAnimation.h
+        objects/Skybox.cpp objects/Skybox.h
+        textures/stb_image.c textures/stb_image.h)
 target_link_libraries(Project4 GLEW::glew_s GLFW3::GLFW3 glm)
