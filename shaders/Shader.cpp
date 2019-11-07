@@ -152,3 +152,9 @@ void Shader::setUniform1f(const std::string &name, const float f) {
         glUniform1f(uniformLocations.at(name), f);
     }
 }
+
+void Shader::setUniform1i(const std::string &name, const int i) {
+    if (uniformLocations.count(name)) {
+        glUniform1i(uniformLocations.at(name), i);
+    }
+}

@@ -44,6 +44,8 @@ public:
 
     void setUniform1f(const std::string &name, const float f);
 
+    void setUniform1i(const std::string &name, const int i);
+
 
 private:
     GLuint programId = 0U;
