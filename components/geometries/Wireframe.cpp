@@ -78,9 +78,11 @@ void Wireframe::draw(const glm::mat4 &world, const glm::mat4 &projection, const 
     // Bind to the VAO.
     glBindVertexArray(vao);
     // Draw points
+    glDisable(GL_CULL_FACE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glEnable(GL_CULL_FACE);
     // Unbind from the VAO.
     glBindVertexArray(0);
 }
