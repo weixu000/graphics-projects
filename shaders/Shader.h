@@ -23,7 +23,8 @@ class Shader {
 public:
     Shader() = default;
 
-    Shader(const char *vertex_file_path, const char *fragment_file_path);
+    Shader(const std::string &vertex_file_path, const std::string &fragment_file_path,
+           const std::string &geometry_file_path = "");
 
     Shader(const Shader &) = delete;
 
@@ -32,7 +33,6 @@ public:
     Shader &operator=(const Shader &) = delete;
 
     Shader &operator=(Shader &&s) noexcept;
-
 
     ~Shader() { glDeleteProgram(programId); }
 

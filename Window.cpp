@@ -2,6 +2,7 @@
 
 #include "Window.h"
 #include "Time.h"
+#include "components/geometries/BezierCurve.h"
 
 Window::Window() {
     setupCallbacks();
@@ -55,10 +56,6 @@ void Window::initializeProgram() {
 }
 
 void Window::initializeObjects() {
-    auto sphere = std::make_shared<Mesh>(Mesh::fromObjFile("meshes/sphere.obj"));
-    sphere->useShader(shaders[0]);
-    scene.addComponent(sphere);
-
     glm::vec3 eye(0, 0, 20);
     glm::mat4 projection = glm::perspective(glm::radians(60.0f),
                                             float(width) / float(height), 1.0f, 1000.0f);
@@ -67,9 +64,26 @@ void Window::initializeObjects() {
     cam = static_cast<Camera *>(scene.addChild(std::make_unique<Camera>(projection, camCtl)));
 
     skybox = std::make_unique<Skybox>();
-}
 
-Window::~Window() {}
+    auto bezier = std::make_shared<BezierCurve>();
+    bezier->controlPoints = {
+            glm::vec3(-5.0f, 0.0f, 0.0f),
+            glm::vec3(-3.0f, 5.0f, 0.0f),
+            glm::vec3(3.0f, 5.0f, 0.0f),
+            glm::vec3(5.0f, 0.0f, 0.0f)
+    };
+    bezier->upload();
+    scene.addComponent(bezier);
+
+    auto sphere = std::make_shared<Mesh>(Mesh::fromObjFile("meshes/sphere.obj"));
+    sphere->useShader(shaders[0]);
+
+    for (auto &v:bezier->controlPoints) {
+        auto n = std::make_unique<Node>(glm::translate(v) * glm::scale(glm::vec3(0.1f)));
+        n->addComponent(sphere);
+        scene.addChild(std::move(n));
+    }
+}
 
 void Window::resizeCallback(int width, int height) {
 #ifdef __APPLE__

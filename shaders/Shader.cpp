@@ -3,31 +3,26 @@
 #include "Shader.h"
 
 enum ShaderType {
-    vertex, fragment
+    vertex = GL_VERTEX_SHADER,
+    fragment = GL_FRAGMENT_SHADER,
+    geometry = GL_GEOMETRY_SHADER
 };
 
-GLuint LoadSingleShader(const char *shaderFilePath, ShaderType type) {
+GLuint LoadSingleShader(const std::string &shaderFilePath, ShaderType type) {
     // Create a shader id.
     GLuint shaderID = 0;
-    if (type == vertex)
-        shaderID = glCreateShader(GL_VERTEX_SHADER);
-    else if (type == fragment)
-        shaderID = glCreateShader(GL_FRAGMENT_SHADER);
+    shaderID = glCreateShader(type);
 
     // Try to read shader codes from the shader file.
     std::string shaderCode;
     std::ifstream shaderStream(shaderFilePath, std::ios::in);
     if (shaderStream.is_open()) {
-        std::string Line = "";
+        std::string Line;
         while (getline(shaderStream, Line))
             shaderCode += "\n" + Line;
         shaderStream.close();
     } else {
-        std::cerr << "Impossible to open " << shaderFilePath << ". "
-                  << "Check to make sure the file exists and you passed in the "
-                  << "right filepath!"
-                  << std::endl;
-        return 0;
+        throw std::runtime_error("Impossible to open " + shaderFilePath);
     }
 
     GLint Result = GL_FALSE;
@@ -46,25 +41,18 @@ GLuint LoadSingleShader(const char *shaderFilePath, ShaderType type) {
         std::vector<char> shaderErrorMessage(InfoLogLength + 1);
         glGetShaderInfoLog(shaderID, InfoLogLength, NULL, shaderErrorMessage.data());
         std::string msg(shaderErrorMessage.begin(), shaderErrorMessage.end());
-        std::cerr << msg << std::endl;
-        return 0;
-    } else {
-        if (type == vertex)
-            printf("Successfully compiled vertex shader!\n");
-        else if (type == fragment)
-            printf("Successfully compiled fragment shader!\n");
+        throw std::runtime_error(msg);
     }
 
     return shaderID;
 }
 
-GLuint LoadShaders(const char *vertexFilePath, const char *fragmentFilePath) {
+GLuint LoadShaders(const std::string &vertexFilePath, const std::string &fragmentFilePath,
+                   const std::string &geometryFilePath = "") {
     // Create the vertex shader and fragment shader.
     GLuint vertexShaderID = LoadSingleShader(vertexFilePath, vertex);
     GLuint fragmentShaderID = LoadSingleShader(fragmentFilePath, fragment);
-
-    // Check both shaders.
-    if (vertexShaderID == 0 || fragmentShaderID == 0) return 0;
+    GLuint geometryShaderID = geometryFilePath.empty() ? 0 : LoadSingleShader(geometryFilePath, geometry);
 
     GLint Result = GL_FALSE;
     int InfoLogLength;
@@ -74,6 +62,7 @@ GLuint LoadShaders(const char *vertexFilePath, const char *fragmentFilePath) {
     GLuint programID = glCreateProgram();
     glAttachShader(programID, vertexShaderID);
     glAttachShader(programID, fragmentShaderID);
+    if (geometryShaderID) glAttachShader(programID, geometryShaderID);
     glLinkProgram(programID);
 
     // Check the program.
@@ -83,9 +72,8 @@ GLuint LoadShaders(const char *vertexFilePath, const char *fragmentFilePath) {
         std::vector<char> ProgramErrorMessage(InfoLogLength + 1);
         glGetProgramInfoLog(programID, InfoLogLength, NULL, ProgramErrorMessage.data());
         std::string msg(ProgramErrorMessage.begin(), ProgramErrorMessage.end());
-        std::cerr << msg << std::endl;
         glDeleteProgram(programID);
-        return 0;
+        throw std::runtime_error(msg);
     } else {
         printf("Successfully linked program!\n");
     }
@@ -93,17 +81,17 @@ GLuint LoadShaders(const char *vertexFilePath, const char *fragmentFilePath) {
     // Detach and delete the shaders as they are no longer needed.
     glDetachShader(programID, vertexShaderID);
     glDetachShader(programID, fragmentShaderID);
+    if (geometryShaderID) glDetachShader(programID, geometryShaderID);
     glDeleteShader(vertexShaderID);
     glDeleteShader(fragmentShaderID);
+    if (geometryShaderID) glDeleteShader(geometryShaderID);
 
     return programID;
 }
 
-Shader::Shader(const char *vertex_file_path, const char *fragment_file_path) {
-    programId = LoadShaders(vertex_file_path, fragment_file_path);
-    if (programId == 0) {
-        throw std::runtime_error("Shader compilation failed!");
-    }
+Shader::Shader(const std::string &vertex_file_path, const std::string &fragment_file_path,
+               const std::string &geometry_file_path) {
+    programId = LoadShaders(vertex_file_path, fragment_file_path, geometry_file_path);
 
     GLint count;
     glGetProgramiv(programId, GL_ACTIVE_UNIFORMS, &count);

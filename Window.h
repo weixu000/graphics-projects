@@ -17,7 +17,6 @@
 #include "objects/Node.h"
 #include "objects/Camera.h"
 #include "objects/Skybox.h"
-#include "components/geometries/Robot.h"
 #include "components/FreeFlying.h"
 #include "shaders/Shader.h"
 #include "GLContext.h"
@@ -40,8 +39,6 @@ public:
     Window();
 
     void loop();
-
-    ~Window() override;
 
     void setupCallbacks();
 
