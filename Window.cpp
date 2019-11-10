@@ -2,8 +2,6 @@
 
 #include "Window.h"
 #include "Time.h"
-#include "components/HumanoidAnimation.h"
-#include "objects/Skybox.h"
 
 Window::Window() {
     setupCallbacks();
@@ -46,8 +44,10 @@ void Window::setupCallbacks() {
 
 void Window::initializeProgram() {
     try {
-        normalShader = std::make_shared<Shader>("shaders/normal_coloring.vert",
-                                                "shaders/normal_coloring.frag");
+        shaders[0] = std::make_shared<Shader>("shaders/normal_coloring.vert",
+                                              "shaders/normal_coloring.frag");
+        shaders[1] = std::make_shared<Shader>("shaders/reflection_map.vert",
+                                              "shaders/reflection_map.frag");
     } catch (...) {
         std::cerr << "Failed to initialize shader program" << std::endl;
         exit(EXIT_FAILURE);
@@ -55,20 +55,9 @@ void Window::initializeProgram() {
 }
 
 void Window::initializeObjects() {
-    auto animation = std::make_shared<HumanoidAnimation>();
-    scene.addComponent(animation);
-    auto robot = std::make_shared<Robot>(animation->headControl, animation->leftArmControl, animation->rightArmControl,
-                                         animation->leftLegControl, animation->rightLegControl);
-    robot->useShader(normalShader);
-
-    for (auto i = -5; i < 5; ++i) {
-        for (auto j = -5; j < 5; ++j) {
-            auto grid = std::make_unique<Node>(
-                    glm::translate(glm::vec3(i * 2, 0, j * 2)) * glm::scale(glm::vec3(0.2f, 0.2f, 0.2f)));
-            grid->addComponent(robot);
-            scene.addChild(std::move(grid));
-        }
-    }
+    auto sphere = std::make_shared<Mesh>(Mesh::fromObjFile("meshes/sphere.obj"));
+    sphere->useShader(shaders[0]);
+    scene.addComponent(sphere);
 
     glm::vec3 eye(0, 0, 20);
     glm::mat4 projection = glm::perspective(glm::radians(60.0f),
@@ -115,8 +104,14 @@ void Window::draw() {
 
     skybox->draw(glm::mat4(1.0f), cam->projection, cam->view, cam->eye);
 
+    // Use cube map
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->cubeMap);
+
     // Render the object.
     scene.draw(glm::mat4(1.0f), cam->projection, cam->view, cam->eye);
+
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
     // Swap buffers.
     glfwSwapBuffers(window);
@@ -154,6 +149,9 @@ void Window::keyCallback(int key, int scancode, int action, int mods) {
             case GLFW_KEY_C:
                 shouldCull = !shouldCull;
                 std::cout << "shouldCull: " << shouldCull << std::endl;
+                break;
+            case GLFW_KEY_N:
+                std::swap(*shaders[0], *shaders[1]);
                 break;
             default:
                 break;

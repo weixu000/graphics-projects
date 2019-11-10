@@ -30,7 +30,7 @@ public:
 
     std::unique_ptr<Skybox> skybox;
 
-    std::shared_ptr<Shader> normalShader;
+    std::array<std::shared_ptr<Shader>, 2> shaders;
 
     std::shared_ptr<FreeFlying> camCtl;
     bool shouldCull = true;
