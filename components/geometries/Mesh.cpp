@@ -5,73 +5,34 @@
 #include <numeric>
 
 #include "Mesh.h"
-#include "../../shaders/Shader.h"
+#include "../../gl_wraps/Shader.h"
 
 Mesh::Mesh(const std::vector<glm::vec3> &attrs, const std::vector<GLuint> &indices) {
     count = indices.size();
 
     computeStatistics(attrs, indices);
 
-    // Generate VAO, VBO, EBO.
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-    glGenBuffers(1, &ebo);
-
     // Bind to the VAO.
-    glBindVertexArray(vao);
+    vao.bind();
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
     // Pass in the data.
-    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * attrs.size(),
-                 attrs.data(), GL_STATIC_DRAW);
+    vbo.upload(sizeof(glm::vec3) * attrs.size(), attrs.data());
     // Enable vertex attribute 0.
     // We will be able to access points through it.
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
-                          2 * sizeof(glm::vec3), nullptr);
+    vao.setAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
+                         2 * sizeof(glm::vec3));
     // Enable vertex attribute 1.
     // We will be able to access normals through it.
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 2 * sizeof(glm::vec3),
-                          reinterpret_cast<void *>(sizeof(glm::vec3)));
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    vao.setAttribPointer(1, 3, GL_FLOAT, GL_FALSE,
+                         2 * sizeof(glm::vec3), sizeof(glm::vec3));
+    vbo.unbind();
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    ebo.bind(GL_ELEMENT_ARRAY_BUFFER);
     // Pass in the data.
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(),
-                 indices.data(), GL_STATIC_DRAW);
+    ebo.upload(sizeof(GLuint) * indices.size(), indices.data(), GL_ELEMENT_ARRAY_BUFFER);
 
     // Unbind from the VAO.
-    glBindVertexArray(0);
-}
-
-Mesh::~Mesh() {
-    // Delete VBO, EBO, VAO.
-    glDeleteBuffers(1, &vbo);
-    glDeleteBuffers(1, &ebo);
-    glDeleteVertexArrays(1, &vao);
-}
-
-Mesh::Mesh(Mesh &&other)
-        : Mesh() {
-    *this = std::move(other);
-}
-
-
-Mesh &Mesh::operator=(Mesh &&other) {
-    count = other.count;
-    vbo = other.vbo;
-    vao = other.vao;
-    ebo = other.ebo;
-    mat = std::move(other.mat);
-    _minVal = other._minVal;
-    _maxVal = other._maxVal;
-    _scale = other._scale;
-
-    other.count = 0;
-    other.vbo = other.vao = other.ebo = 0;
-
-    return *this;
+    vao.unbind();
 }
 
 void Mesh::draw(const glm::mat4 &world, const glm::mat4 &projection, const glm::mat4 &view, const glm::vec3 &eye) {
@@ -85,11 +46,11 @@ void Mesh::draw(const glm::mat4 &world, const glm::mat4 &projection, const glm::
     shader->setUniform3f("viewPos", eye);
     shader->setUniformMatrix4("model", world);
     // Bind to the VAO.
-    glBindVertexArray(vao);
+    vao.bind();
     // Draw points
     glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, 0);
     // Unbind from the VAO.
-    glBindVertexArray(0);
+    vao.unbind();
 }
 
 glm::mat4 Mesh::normalizeMat() const {

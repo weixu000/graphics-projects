@@ -18,8 +18,8 @@
 #include "objects/Camera.h"
 #include "objects/Skybox.h"
 #include "components/FreeFlying.h"
-#include "shaders/Shader.h"
-#include "GLContext.h"
+#include "gl_wraps/Shader.h"
+#include "gl_wraps/GLContext.h"
 
 class Window : public GLContext {
 public:

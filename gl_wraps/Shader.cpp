@@ -31,7 +31,7 @@ GLuint LoadSingleShader(const std::string &shaderFilePath, ShaderType type) {
     // Compile Shader.
     std::cerr << "Compiling shader: " << shaderFilePath << std::endl;
     char const *sourcePointer = shaderCode.c_str();
-    glShaderSource(shaderID, 1, &sourcePointer, NULL);
+    glShaderSource(shaderID, 1, &sourcePointer, nullptr);
     glCompileShader(shaderID);
 
     // Check Shader.
@@ -39,7 +39,7 @@ GLuint LoadSingleShader(const std::string &shaderFilePath, ShaderType type) {
     glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
     if (InfoLogLength > 0) {
         std::vector<char> shaderErrorMessage(InfoLogLength + 1);
-        glGetShaderInfoLog(shaderID, InfoLogLength, NULL, shaderErrorMessage.data());
+        glGetShaderInfoLog(shaderID, InfoLogLength, nullptr, shaderErrorMessage.data());
         std::string msg(shaderErrorMessage.begin(), shaderErrorMessage.end());
         throw std::runtime_error(msg);
     }
@@ -47,80 +47,60 @@ GLuint LoadSingleShader(const std::string &shaderFilePath, ShaderType type) {
     return shaderID;
 }
 
-GLuint LoadShaders(const std::string &vertexFilePath, const std::string &fragmentFilePath,
-                   const std::string &geometryFilePath = "") {
+void Shader::compileProgram(const std::string &vertexFilePath, const std::string &fragmentFilePath,
+                            const std::string &geometryFilePath) {
     // Create the vertex shader and fragment shader.
-    GLuint vertexShaderID = LoadSingleShader(vertexFilePath, vertex);
-    GLuint fragmentShaderID = LoadSingleShader(fragmentFilePath, fragment);
-    GLuint geometryShaderID = geometryFilePath.empty() ? 0 : LoadSingleShader(geometryFilePath, geometry);
+    auto vertexShaderID = LoadSingleShader(vertexFilePath, vertex);
+    auto fragmentShaderID = LoadSingleShader(fragmentFilePath, fragment);
+    auto geometryShaderID = geometryFilePath.empty() ? 0 : LoadSingleShader(geometryFilePath, geometry);
 
     GLint Result = GL_FALSE;
     int InfoLogLength;
 
     // Link the program.
     printf("Linking program\n");
-    GLuint programID = glCreateProgram();
-    glAttachShader(programID, vertexShaderID);
-    glAttachShader(programID, fragmentShaderID);
-    if (geometryShaderID) glAttachShader(programID, geometryShaderID);
-    glLinkProgram(programID);
+    glAttachShader(id, vertexShaderID);
+    glAttachShader(id, fragmentShaderID);
+    if (geometryShaderID) glAttachShader(id, geometryShaderID);
+    glLinkProgram(id);
 
     // Check the program.
-    glGetProgramiv(programID, GL_LINK_STATUS, &Result);
-    glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+    glGetProgramiv(id, GL_LINK_STATUS, &Result);
+    glGetProgramiv(id, GL_INFO_LOG_LENGTH, &InfoLogLength);
     if (InfoLogLength > 0) {
         std::vector<char> ProgramErrorMessage(InfoLogLength + 1);
-        glGetProgramInfoLog(programID, InfoLogLength, NULL, ProgramErrorMessage.data());
+        glGetProgramInfoLog(id, InfoLogLength, nullptr, ProgramErrorMessage.data());
         std::string msg(ProgramErrorMessage.begin(), ProgramErrorMessage.end());
-        glDeleteProgram(programID);
+        glDeleteProgram(id);
         throw std::runtime_error(msg);
     } else {
         printf("Successfully linked program!\n");
     }
 
     // Detach and delete the shaders as they are no longer needed.
-    glDetachShader(programID, vertexShaderID);
-    glDetachShader(programID, fragmentShaderID);
-    if (geometryShaderID) glDetachShader(programID, geometryShaderID);
+    glDetachShader(id, vertexShaderID);
+    glDetachShader(id, fragmentShaderID);
+    if (geometryShaderID) glDetachShader(id, geometryShaderID);
     glDeleteShader(vertexShaderID);
     glDeleteShader(fragmentShaderID);
     if (geometryShaderID) glDeleteShader(geometryShaderID);
-
-    return programID;
 }
 
 Shader::Shader(const std::string &vertex_file_path, const std::string &fragment_file_path,
                const std::string &geometry_file_path) {
-    programId = LoadShaders(vertex_file_path, fragment_file_path, geometry_file_path);
+    compileProgram(vertex_file_path, fragment_file_path, geometry_file_path);
 
     GLint count;
-    glGetProgramiv(programId, GL_ACTIVE_UNIFORMS, &count);
+    glGetProgramiv(id, GL_ACTIVE_UNIFORMS, &count);
     GLint max_len;
-    glGetProgramiv(programId, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_len);
+    glGetProgramiv(id, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_len);
     for (GLint i = 0; i < count; i++) {
         std::string name(GL_ACTIVE_UNIFORM_MAX_LENGTH, '\0');
         GLsizei length;
-        glGetActiveUniform(programId, i, GL_ACTIVE_UNIFORM_MAX_LENGTH, &length, nullptr, nullptr, name.data());
+        glGetActiveUniform(id, i, GL_ACTIVE_UNIFORM_MAX_LENGTH, &length, nullptr, nullptr, name.data());
         name.resize(length);
-        uniformLocations[name] = glGetUniformLocation(programId, name.c_str());
+        uniformLocations[name] = glGetUniformLocation(id, name.c_str());
     }
-}
-
-Shader::Shader(Shader &&s) noexcept {
-    programId = s.programId;
-    s.programId = 0U;
-
-    uniformLocations = std::move(s.uniformLocations);
-}
-
-Shader &Shader::operator=(Shader &&s) noexcept {
-    glDeleteProgram(programId);
-    programId = s.programId;
-    s.programId = 0U;
-
-    uniformLocations = std::move(s.uniformLocations);
-
-    return *this;
 }
 
 void Shader::setUniformMatrix4(const std::string &name, const glm::mat4 &m) {

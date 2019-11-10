@@ -2,21 +2,13 @@
 #define BEZIERCURVE_H
 
 #include "Geometry.h"
-#include "../../shaders/Shader.h"
+#include "../../gl_wraps/Shader.h"
+#include "../../gl_wraps/GLBuffer.h"
+#include "../../gl_wraps/GLVertexArray.h"
 
 class BezierCurve : public Geometry {
 public:
     BezierCurve();
-
-    ~BezierCurve() override;
-
-    BezierCurve(const BezierCurve &) = delete;
-
-    BezierCurve(BezierCurve &&);
-
-    BezierCurve &operator=(const BezierCurve &) = delete;
-
-    BezierCurve &operator=(BezierCurve &&);
 
     void
     draw(const glm::mat4 &world, const glm::mat4 &projection, const glm::mat4 &view, const glm::vec3 &eye) override;
@@ -28,7 +20,8 @@ public:
     AABB boundingBox() const override { return bb; }
 
 private:
-    GLuint vao = 0, vbo = 0, ebo = 0;
+    GLVertexArray vao;
+    GLBuffer vbo, ebo;
 
     AABB bb;
 

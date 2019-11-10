@@ -15,24 +15,16 @@
 #include <string>
 
 #include "Geometry.h"
-#include "../../shaders/Shader.h"
+#include "../../gl_wraps/Shader.h"
 #include "../../Material.h"
+#include "../../gl_wraps/GLBuffer.h"
+#include "../../gl_wraps/GLVertexArray.h"
 
 class Mesh : public Geometry {
 public:
     Mesh() = default;
 
     Mesh(const std::vector<glm::vec3> &attrs, const std::vector<GLuint> &indices);
-
-    ~Mesh() override;
-
-    Mesh(const Mesh &) = delete;
-
-    Mesh(Mesh &&);
-
-    Mesh &operator=(const Mesh &) = delete;
-
-    Mesh &operator=(Mesh &&);
 
     static Mesh fromObjFile(const std::string &objFilename);
 
@@ -57,7 +49,8 @@ public:
 
 private:
     GLsizei count = 0;
-    GLuint vao = 0, vbo = 0, ebo = 0;
+    GLVertexArray vao;
+    GLBuffer vbo, ebo;
     std::shared_ptr<Material> mat;
 
     glm::vec3 _minVal, _maxVal, _center;

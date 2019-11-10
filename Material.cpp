@@ -1,5 +1,5 @@
 #include "Material.h"
-#include "shaders/Shader.h"
+#include "gl_wraps/Shader.h"
 
 void Material::setUniform(Shader &s) {
     s.setUniform3f("ks", ks);
