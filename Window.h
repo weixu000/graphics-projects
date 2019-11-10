@@ -16,6 +16,7 @@
 
 #include "objects/Node.h"
 #include "objects/Camera.h"
+#include "objects/Skybox.h"
 #include "components/geometries/Robot.h"
 #include "components/FreeFlying.h"
 #include "shaders/Shader.h"
@@ -26,6 +27,8 @@ public:
     Node scene;
 
     Camera *cam;
+
+    std::unique_ptr<Skybox> skybox;
 
     std::shared_ptr<Shader> normalShader;
 

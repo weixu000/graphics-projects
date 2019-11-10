@@ -78,7 +78,7 @@ void Window::initializeObjects() {
     camCtl = std::make_shared<FreeFlying>(glm::translate(eye));
     cam = static_cast<Camera *>(scene.addChild(std::make_unique<Camera>(projection, camCtl)));
 
-    scene.addChild(std::make_unique<Skybox>());
+    skybox = std::make_unique<Skybox>();
 }
 
 Window::~Window() {}
@@ -120,6 +120,8 @@ void Window::draw() {
 
     // Clear the color and depth buffers.
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    skybox->draw(glm::mat4(1.0f), cam->projection, cam->view, cam->eye);
 
     // Render the object.
     scene.draw(glm::mat4(1.0f), cam->projection, cam->view, cam->eye);

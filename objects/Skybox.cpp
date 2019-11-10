@@ -46,11 +46,6 @@ Skybox::~Skybox() {
     glDeleteTextures(1, &cubeMap);
 }
 
-bool Skybox::cull(const glm::mat4 &view_proj) {
-    _culled = false;
-    return _culled;
-}
-
 void Skybox::draw(const glm::mat4 &world, const glm::mat4 &projection, const glm::mat4 &view, const glm::vec3 &eye) {
     // Use cube map
     glActiveTexture(GL_TEXTURE0);
