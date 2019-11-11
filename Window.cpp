@@ -81,12 +81,12 @@ void Window::draw() {
     }
 
     // Clear the color and depth buffers.
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     skybox->draw(glm::mat4(1.0f), cam->projection, cam->view, cam->eye);
 
-    for (auto &c:controls) {
-        c.draw(cam->projection, cam->view, cam->eye);
+    for (int i = 0; i < controls.size(); ++i) {
+        controls[i].draw(cam->projection, cam->view, cam->eye, 3 * i + 1);
     }
 
     // Use cube map
@@ -210,6 +210,16 @@ void Window::mouseButtonCallback(int button, int action, int mods) {
                 camCtl->stopRotate();
             }
             break;
+        case GLFW_MOUSE_BUTTON_RIGHT:
+            if (action == GLFW_PRESS) {
+                double x, y;
+                glfwGetCursorPos(window, &x, &y);
+                int stencil;
+                glReadPixels(x, height - 1 - y, 1, 1,
+                             GL_STENCIL_INDEX, GL_INT, &stencil);
+                std::cout << stencil << std::endl;
+            }
+            break;
         default:
             break;
     }
@@ -233,6 +243,10 @@ void Window::loop() {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     // Set clear color to black.
     glClearColor(0.0, 0.0, 0.0, 0.0);
+
+    // Enable stencil test
+    glEnable(GL_STENCIL_TEST);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_ZERO);
 
     Time::reset();
     while (!glfwWindowShouldClose(window)) {

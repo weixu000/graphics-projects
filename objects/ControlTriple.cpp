@@ -36,7 +36,7 @@ void ControlTriple::setMiddle(const glm::vec3 &val) {
     upload();
 }
 
-void ControlTriple::draw(const glm::mat4 &projection, const glm::mat4 &view, const glm::vec3 &eye) {
+void ControlTriple::draw(const glm::mat4 &projection, const glm::mat4 &view, const glm::vec3 &eye, GLint stencil) {
     shader->use();
     shader->setUniform3f("color", glm::vec3(0.0f, 0.0f, 1.0f));
     shader->setUniformMatrix4("projection", projection);
@@ -46,12 +46,19 @@ void ControlTriple::draw(const glm::mat4 &projection, const glm::mat4 &view, con
     glDrawArrays(GL_LINES, 0, 2);
     vao.unbind();
 
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
     shader->setUniform3f("color", glm::vec3(1.0f, 0.0f, 0.0f));
+    glStencilFunc(GL_ALWAYS, stencil + 1, 0xFF);
     controlIndicator->draw(glm::translate(*middle) * glm::scale(glm::vec3(0.05f)), projection, view, eye);
 
     shader->setUniform3f("color", glm::vec3(0.0f, 1.0f, 0.0f));
+    glStencilFunc(GL_ALWAYS, stencil, 0xFF);
     approxIndicator->draw(glm::translate(*left) * glm::scale(glm::vec3(0.05f)), projection, view, eye);
+    glStencilFunc(GL_ALWAYS, stencil + 2, 0xFF);
     approxIndicator->draw(glm::translate(*right) * glm::scale(glm::vec3(0.05f)), projection, view, eye);
+
+    glStencilOp(GL_KEEP, GL_KEEP, GL_ZERO);
 }
 
 void ControlTriple::upload() {

@@ -16,7 +16,7 @@ public:
 
     void setMiddle(const glm::vec3 &val);
 
-    void draw(const glm::mat4 &projection, const glm::mat4 &view, const glm::vec3 &eye);
+    void draw(const glm::mat4 &projection, const glm::mat4 &view, const glm::vec3 &eye, GLint stencil);
 
     void upload();
 
