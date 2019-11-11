@@ -14,35 +14,6 @@ Window::Window() {
     resizeCallback(width, height);
 }
 
-void Window::setupCallbacks() {
-    // Set the key callback.
-    glfwSetKeyCallback(window,
-                       [](GLFWwindow *window, int key, int scancode, int action, int mods) {
-                           retrieve(window)->keyCallback(key, scancode, action, mods);
-                       });
-    // Set the window resize callback.
-    glfwSetWindowSizeCallback(window,
-                              [](GLFWwindow *window, int width, int height) {
-                                  retrieve(window)->resizeCallback(width, height);
-                              });
-    // Set the mouse button callback.
-    glfwSetMouseButtonCallback(window,
-                               [](GLFWwindow *window, int button, int action, int mods) {
-                                   retrieve(window)->mouseButtonCallback(button, action, mods);
-                               });
-    // Set the cursor position callback.
-    glfwSetCursorPosCallback(window,
-                             [](GLFWwindow *window, double x, double y) {
-                                 retrieve(window)->cursorPosCallback(x, y);
-                             });
-
-    // Set the scroll callback.
-    glfwSetScrollCallback(window,
-                          [](GLFWwindow *window, double xoffset, double yoffset) {
-                              retrieve(window)->scrollCallback(xoffset, yoffset);
-                          });
-}
-
 void Window::initializeProgram() {
     try {
         shaders[0] = std::make_shared<Shader>("shaders/normal_coloring.vert",
@@ -129,6 +100,35 @@ void Window::draw() {
 
     // Swap buffers.
     glfwSwapBuffers(window);
+}
+
+void Window::setupCallbacks() {
+    // Set the key callback.
+    glfwSetKeyCallback(window,
+                       [](GLFWwindow *window, int key, int scancode, int action, int mods) {
+                           retrieve(window)->keyCallback(key, scancode, action, mods);
+                       });
+    // Set the window resize callback.
+    glfwSetWindowSizeCallback(window,
+                              [](GLFWwindow *window, int width, int height) {
+                                  retrieve(window)->resizeCallback(width, height);
+                              });
+    // Set the mouse button callback.
+    glfwSetMouseButtonCallback(window,
+                               [](GLFWwindow *window, int button, int action, int mods) {
+                                   retrieve(window)->mouseButtonCallback(button, action, mods);
+                               });
+    // Set the cursor position callback.
+    glfwSetCursorPosCallback(window,
+                             [](GLFWwindow *window, double x, double y) {
+                                 retrieve(window)->cursorPosCallback(x, y);
+                             });
+
+    // Set the scroll callback.
+    glfwSetScrollCallback(window,
+                          [](GLFWwindow *window, double xoffset, double yoffset) {
+                              retrieve(window)->scrollCallback(xoffset, yoffset);
+                          });
 }
 
 void Window::keyCallback(int key, int scancode, int action, int mods) {
