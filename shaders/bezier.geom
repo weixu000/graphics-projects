@@ -19,7 +19,7 @@ void main() {
     gl_in[3].gl_Position
     ) * B;
     float t = 0.0;
-    for (int i = 0; i < nSamples; ++i, t += 1.0 / nSamples){
+    for (int i = 0; i < nSamples; ++i, t += 1.0 / (nSamples - 1)){
         gl_Position = GB*vec4(t * t * t, t * t, t, 1.0);
         EmitVertex();
     }
