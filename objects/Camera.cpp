@@ -8,13 +8,14 @@ Camera::Camera(const glm::mat4 &p, std::shared_ptr<Transform> t)
         : Node(t), projection(p) {
 }
 
-void Camera::setup() {
+void Camera::update() {
     auto cam = glm::mat4(1.0f);
     for (Node *p = this; p != nullptr; p = p->parent()) {
         cam = p->transform->model * cam;
     }
     view = glm::inverse(cam);
     eye = glm::vec3(cam[3]);
+    Node::update();
 }
 
 std::unique_ptr<Node> Camera::copy() {

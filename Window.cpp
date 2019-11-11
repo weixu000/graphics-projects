@@ -74,8 +74,6 @@ void Window::update() {
 }
 
 void Window::draw() {
-    cam->setup();
-
     if (shouldCull) {
         scene.cull(cam->projection * cam->view);
     }

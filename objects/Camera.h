@@ -14,7 +14,7 @@ public:
 
     explicit Camera(const glm::mat4 &p, std::shared_ptr<Transform> t);
 
-    void setup();
+    void update() override;
 
     std::unique_ptr<Node> copy() override;
 
