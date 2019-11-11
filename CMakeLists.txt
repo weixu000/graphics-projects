@@ -32,5 +32,6 @@ add_executable(Project4
         components/HumanoidAnimation.cpp components/HumanoidAnimation.h
         objects/Skybox.cpp objects/Skybox.h
         textures/stb_image.c textures/stb_image.h
-        components/geometries/BezierCurve.cpp components/geometries/BezierCurve.h)
+        components/geometries/BezierCurve.cpp components/geometries/BezierCurve.h
+        objects/ControlTriple.cpp objects/ControlTriple.h)
 target_link_libraries(Project4 GLEW::glew_s GLFW3::GLFW3 glm)

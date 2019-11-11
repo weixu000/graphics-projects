@@ -37,23 +37,19 @@ void Window::initializeObjects() {
     skybox = std::make_unique<Skybox>();
 
     auto bezier = std::make_shared<BezierCurve>();
-    bezier->controlPoints = {
-            glm::vec3(-5.0f, 0.0f, 0.0f),
-            glm::vec3(-3.0f, 5.0f, 0.0f),
-            glm::vec3(3.0f, 5.0f, 0.0f),
-            glm::vec3(5.0f, 0.0f, 0.0f)
-    };
+    for (int i = 0; i < 3 * 8; ++i) {
+        auto theta = 2 * glm::pi<float>() / (3 * 8) * i;
+        bezier->controlPoints.emplace_back(5.0f * glm::cos(theta),
+                                           i % 2 ? 1.0f : -1.0f,
+                                           5.0f * glm::sin(theta));
+    }
+    for (size_t i = 1; i <= bezier->controlPoints.size() / 3; ++i) {
+        controls.emplace_back(&bezier->controlPoints[3 * i - 1],
+                              &bezier->controlPoints[(3 * i) % bezier->controlPoints.size()],
+                              &bezier->controlPoints[(3 * i + 1) % bezier->controlPoints.size()]);
+    }
     bezier->upload();
     scene.addComponent(bezier);
-
-    auto sphere = std::make_shared<Mesh>(Mesh::fromObjFile("meshes/sphere.obj"));
-    sphere->useShader(shaders[0]);
-
-    for (auto &v:bezier->controlPoints) {
-        auto n = std::make_unique<Node>(glm::translate(v) * glm::scale(glm::vec3(0.1f)));
-        n->addComponent(sphere);
-        scene.addChild(std::move(n));
-    }
 }
 
 void Window::resizeCallback(int width, int height) {
@@ -88,6 +84,10 @@ void Window::draw() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     skybox->draw(glm::mat4(1.0f), cam->projection, cam->view, cam->eye);
+
+    for (auto &c:controls) {
+        c.draw(cam->projection, cam->view, cam->eye);
+    }
 
     // Use cube map
     glActiveTexture(GL_TEXTURE0);

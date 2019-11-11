@@ -20,6 +20,7 @@
 #include "components/FreeFlying.h"
 #include "gl_wraps/Shader.h"
 #include "gl_wraps/GLContext.h"
+#include "objects/ControlTriple.h"
 
 class Window : public GLContext {
 public:
@@ -30,6 +31,8 @@ public:
     std::unique_ptr<Skybox> skybox;
 
     std::array<std::shared_ptr<Shader>, 2> shaders;
+
+    std::vector<ControlTriple> controls;
 
     std::shared_ptr<FreeFlying> camCtl;
     bool shouldCull = true;
