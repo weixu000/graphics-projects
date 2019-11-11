@@ -223,6 +223,17 @@ void Window::scrollCallback(double xoffset, double yoffset) {
 }
 
 void Window::loop() {
+    // Enable depth buffering.
+    glEnable(GL_DEPTH_TEST);
+    // Related to shaders and z value comparisons for the depth buffer.
+    glDepthFunc(GL_LEQUAL);
+    // Enable face culling.
+    glEnable(GL_CULL_FACE);
+    // Set polygon drawing mode to fill front and back of each polygon.
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    // Set clear color to black.
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+
     Time::reset();
     while (!glfwWindowShouldClose(window)) {
         Time::tick();

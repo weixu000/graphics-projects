@@ -19,19 +19,6 @@ void error_callback(int error, const char *description) {
     exit(EXIT_FAILURE);
 }
 
-void setup_opengl_settings() {
-    // Enable depth buffering.
-    glEnable(GL_DEPTH_TEST);
-    // Related to shaders and z value comparisons for the depth buffer.
-    glDepthFunc(GL_LEQUAL);
-    // Enable face culling.
-    glEnable(GL_CULL_FACE);
-    // Set polygon drawing mode to fill front and back of each polygon.
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    // Set clear color to black.
-    glClearColor(0.0, 0.0, 0.0, 0.0);
-}
-
 void setup_glfw() {
     // Initialize GLFW.
     if (!glfwInit()) {
@@ -59,8 +46,6 @@ int main(void) {
     setup_glfw();
 
     Window window;
-    // Setup OpenGL settings.
-    setup_opengl_settings();
     // Loop while GLFW window should stay open.
     window.loop();
 }
