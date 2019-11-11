@@ -43,6 +43,7 @@ void Wireframe::draw(const glm::mat4 &world, const glm::mat4 &projection, const 
     shader->setUniformMatrix4("projection", projection);
     shader->setUniformMatrix4("view", view);
     shader->setUniformMatrix4("model", world);
+    shader->setUniform3f("color", glm::vec3(1.0f, 1.0f, 1.0f));
     // Bind to the VAO.
     vao.bind();
     // Draw points
