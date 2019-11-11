@@ -95,9 +95,11 @@ Shader::Shader(const std::string &vertex_file_path, const std::string &fragment_
     GLint max_len;
     glGetProgramiv(id, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_len);
     for (GLint i = 0; i < count; i++) {
-        std::string name(GL_ACTIVE_UNIFORM_MAX_LENGTH, '\0');
+        std::string name(max_len, '\0');
         GLsizei length;
-        glGetActiveUniform(id, i, GL_ACTIVE_UNIFORM_MAX_LENGTH, &length, nullptr, nullptr, name.data());
+        GLint size;
+        GLenum type;
+        glGetActiveUniform(id, i, max_len, &length, &size, &type, name.data());
         name.resize(length);
         uniformLocations[name] = glGetUniformLocation(id, name.c_str());
     }
