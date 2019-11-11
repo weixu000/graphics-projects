@@ -10,7 +10,7 @@ BezierCurve::BezierCurve() {
 }
 
 void BezierCurve::upload() {
-    assert(controlPoints.empty() || (controlPoints.size() % 3 == 1 && controlPoints.size() / 3 > 0));
+    assert(controlPoints.size() % 3 == 0 || (controlPoints.size() % 3 == 1 && controlPoints.size() / 3 > 0));
 
     const auto inf = std::numeric_limits<float>::infinity();
     glm::vec3 minVal(inf, inf, inf), maxVal(-inf, -inf, -inf);
@@ -25,7 +25,7 @@ void BezierCurve::upload() {
         indices[4 * i] = 3 * i;
         indices[4 * i + 1] = 3 * i + 1;
         indices[4 * i + 2] = 3 * i + 2;
-        indices[4 * i + 3] = 3 * i + 3;
+        indices[4 * i + 3] = (3 * i + 3) % controlPoints.size();
     }
 
     // Bind to the VAO.
