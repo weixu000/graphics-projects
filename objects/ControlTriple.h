@@ -10,18 +10,16 @@ class ControlTriple {
 public:
     ControlTriple(glm::vec3 *left, glm::vec3 *middle, glm::vec3 *right);
 
-    void setLeft(const glm::vec3 &val);
+    void set(int i, const glm::vec3 &val);
 
-    void setRight(const glm::vec3 &val);
-
-    void setMiddle(const glm::vec3 &val);
+    const glm::vec3 &get(int i) { return *points[i]; }
 
     void draw(const glm::mat4 &projection, const glm::mat4 &view, const glm::vec3 &eye, GLint stencil);
 
     void upload();
 
 private:
-    glm::vec3 *left, *middle, *right;
+    std::array<glm::vec3 *, 3> points;
 
     static std::shared_ptr<Shader> shader;
 

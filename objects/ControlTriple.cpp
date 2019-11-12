@@ -3,36 +3,40 @@
 std::shared_ptr<Shader> ControlTriple::shader;
 std::shared_ptr<Mesh> ControlTriple::controlIndicator, ControlTriple::approxIndicator;
 
-ControlTriple::ControlTriple(glm::vec3 *left, glm::vec3 *middle, glm::vec3 *right)
-        : left(left), middle(middle), right(right) {
+ControlTriple::ControlTriple(glm::vec3 *left, glm::vec3 *middle, glm::vec3 *right) {
+    points = {left, middle, right};
     if (!shader || !controlIndicator || !approxIndicator) {
         shader = std::make_shared<Shader>("shaders/flat.vert", "shaders/flat.frag");
         controlIndicator = approxIndicator = std::make_shared<Mesh>(Mesh::fromObjFile("meshes/sphere.obj"));
         controlIndicator->useShader(shader);
         approxIndicator->useShader(shader);
     }
-    setMiddle(*middle);
+    set(1, *middle);
 }
 
-void ControlTriple::setLeft(const glm::vec3 &val) {
-    auto delta = *middle - val;
-    *left = *middle - delta;
-    *right = *middle + delta;
-    upload();
-}
-
-void ControlTriple::setRight(const glm::vec3 &val) {
-    auto delta = val - *middle;
-    *left = *middle - delta;
-    *right = *middle + delta;
-    upload();
-}
-
-void ControlTriple::setMiddle(const glm::vec3 &val) {
-    auto delta = (*right - *left) / 2.0f;
-    *middle = val;
-    *left = *middle - delta;
-    *right = *middle + delta;
+void ControlTriple::set(int i, const glm::vec3 &val) {
+    assert(i < points.size());
+    switch (i) {
+        case 0: {
+            auto delta = *points[1] - val;
+            *points[0] = *points[1] - delta;
+            *points[2] = *points[1] + delta;
+        }
+            break;
+        case 1: {
+            auto delta = (*points[2] - *points[0]) / 2.0f;
+            *points[1] = val;
+            *points[0] = *points[1] - delta;
+            *points[2] = *points[1] + delta;
+        }
+            break;
+        case 2: {
+            auto delta = val - *points[1];
+            *points[0] = *points[1] - delta;
+            *points[2] = *points[1] + delta;
+        }
+            break;
+    }
     upload();
 }
 
@@ -50,13 +54,13 @@ void ControlTriple::draw(const glm::mat4 &projection, const glm::mat4 &view, con
 
     shader->setUniform3f("color", glm::vec3(1.0f, 0.0f, 0.0f));
     glStencilFunc(GL_ALWAYS, stencil + 1, 0xFF);
-    controlIndicator->draw(glm::translate(*middle) * glm::scale(glm::vec3(0.05f)), projection, view, eye);
+    controlIndicator->draw(glm::translate(*points[1]) * glm::scale(glm::vec3(0.05f)), projection, view, eye);
 
     shader->setUniform3f("color", glm::vec3(0.0f, 1.0f, 0.0f));
     glStencilFunc(GL_ALWAYS, stencil, 0xFF);
-    approxIndicator->draw(glm::translate(*left) * glm::scale(glm::vec3(0.05f)), projection, view, eye);
+    approxIndicator->draw(glm::translate(*points[0]) * glm::scale(glm::vec3(0.05f)), projection, view, eye);
     glStencilFunc(GL_ALWAYS, stencil + 2, 0xFF);
-    approxIndicator->draw(glm::translate(*right) * glm::scale(glm::vec3(0.05f)), projection, view, eye);
+    approxIndicator->draw(glm::translate(*points[2]) * glm::scale(glm::vec3(0.05f)), projection, view, eye);
 
     glStencilOp(GL_KEEP, GL_KEEP, GL_ZERO);
 }
@@ -65,7 +69,7 @@ void ControlTriple::upload() {
     // Bind to the VAO.
     vao.bind();
 
-    std::array<glm::vec3, 2> segments = {*left, *right};
+    std::array<glm::vec3, 2> segments = {*points[0], *points[2]};
 
     // Pass in the data.
     vbo.upload(sizeof(glm::vec3) * segments.size(), segments.data());
