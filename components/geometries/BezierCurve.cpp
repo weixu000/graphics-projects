@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "BezierCurve.h"
 
 std::unique_ptr<Shader> BezierCurve::shader;
@@ -59,4 +61,36 @@ BezierCurve::draw(const glm::mat4 &world, const glm::mat4 &projection, const glm
     glDrawElements(GL_LINES_ADJACENCY, controlPoints.size() / 3 * 4, GL_UNSIGNED_INT, 0);
     // Unbind from the VAO.
     vao.unbind();
+}
+
+glm::mat4 BezierCurve::B(-1, 3, -3, 1,
+                         3, -6, 3, 0,
+                         -3, 3, 0, 0,
+                         1, 0, 0, 0);
+
+std::tuple<int, float> BezierCurve::segment(float t) {
+    int i = int(std::floor(t));
+    t -= i;
+    i = std::div(i, controlPoints.size() / 3).rem;
+    return std::make_tuple(i, t);
+}
+
+glm::vec3 BezierCurve::position(float t) {
+    auto[i, t_]=segment(t);
+    glm::mat4 G(glm::vec4(controlPoints[3 * i], 1.0f),
+                glm::vec4(controlPoints[3 * i + 1], 1.0f),
+                glm::vec4(controlPoints[3 * i + 2], 1.0f),
+                glm::vec4(controlPoints[(3 * i + 3) % controlPoints.size()], 1.0f));
+
+    return G * B * glm::vec4(t_ * t_ * t_, t_ * t_, t_, 1.0);
+}
+
+glm::vec3 BezierCurve::derivative(float t) {
+    auto[i, t_]=segment(t);
+    glm::mat4 G(glm::vec4(controlPoints[3 * i], 1.0f),
+                glm::vec4(controlPoints[3 * i + 1], 1.0f),
+                glm::vec4(controlPoints[3 * i + 2], 1.0f),
+                glm::vec4(controlPoints[(3 * i + 3) % controlPoints.size()], 1.0f));
+
+    return G * B * glm::vec4(3 * t_ * t_, 2 * t_, 1, 0.0);
 }

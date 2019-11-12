@@ -19,13 +19,21 @@ public:
 
     AABB boundingBox() const override { return bb; }
 
+    glm::vec3 position(float t);
+
+    glm::vec3 derivative(float t);
+
 private:
     GLVertexArray vao;
     GLBuffer vbo, ebo;
 
     AABB bb;
 
+    std::tuple<int, float> segment(float t);
+
     static std::unique_ptr<Shader> shader;
+
+    static glm::mat4 B;
 };
 
 
