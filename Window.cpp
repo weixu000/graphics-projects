@@ -2,7 +2,6 @@
 
 #include "Window.h"
 #include "Time.h"
-#include "components/geometries/BezierCurve.h"
 
 Window::Window() {
     setupCallbacks();
@@ -36,7 +35,7 @@ void Window::initializeObjects() {
 
     skybox = std::make_unique<Skybox>();
 
-    auto bezier = std::make_shared<BezierCurve>();
+    bezier = std::make_shared<BezierCurve>();
     for (int i = 0; i < 3 * 8; ++i) {
         auto theta = 2 * glm::pi<float>() / (3 * 8) * i;
         bezier->controlPoints.emplace_back(5.0f * glm::cos(theta),
@@ -212,10 +211,9 @@ void Window::mouseButtonCallback(int button, int action, int mods) {
             if (action == GLFW_PRESS) {
                 double x, y;
                 glfwGetCursorPos(window, &x, &y);
-                int stencil;
-                glReadPixels(x, height - 1 - y, 1, 1,
-                             GL_STENCIL_INDEX, GL_INT, &stencil);
-                std::cout << stencil << std::endl;
+                glReadPixels(x, height - 1 - y, 1, 1, GL_STENCIL_INDEX, GL_INT, &selected);
+            } else if (action == GLFW_RELEASE) {
+                selected = 0;
             }
             break;
         default:
@@ -225,6 +223,16 @@ void Window::mouseButtonCallback(int button, int action, int mods) {
 
 void Window::cursorPosCallback(double x, double y) {
     camCtl->rotate(x / Window::width, y / Window::height);
+
+    if (selected) {
+        auto viewport = glm::vec4(0.0f, 0.0f, width, height);
+        auto &c = controls[(selected - 1) / 3];
+        auto i = (selected - 1) % 3;
+        auto win_coord = glm::vec3(x, height - 1 - y,
+                                   glm::project(c.get(i), cam->view, cam->projection, viewport).z);
+        c.set(i, glm::unProject(win_coord, cam->view, cam->projection, viewport));
+        bezier->upload();
+    }
 }
 
 void Window::scrollCallback(double xoffset, double yoffset) {

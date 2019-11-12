@@ -20,6 +20,7 @@
 #include "components/FreeFlying.h"
 #include "gl_wraps/Shader.h"
 #include "gl_wraps/GLContext.h"
+#include "components/geometries/BezierCurve.h"
 #include "objects/ControlTriple.h"
 
 class Window : public GLContext {
@@ -32,7 +33,10 @@ public:
 
     std::array<std::shared_ptr<Shader>, 2> shaders;
 
+    std::shared_ptr<BezierCurve> bezier;
+
     std::vector<ControlTriple> controls;
+    int selected = 0;
 
     std::shared_ptr<FreeFlying> camCtl;
     bool shouldCull = true;
