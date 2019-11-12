@@ -14,6 +14,10 @@ public:
 
     explicit Node(std::shared_ptr<Transform> t);
 
+    Node(Node &&) = default;
+
+    Node &operator=(Node &&) = default;
+
     virtual ~Node() = default;
 
     virtual void draw(const glm::mat4 &world, const glm::mat4 &projection, const glm::mat4 &view, const glm::vec3 &eye);
