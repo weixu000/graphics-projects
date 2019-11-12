@@ -27,12 +27,11 @@ void Window::initializeProgram() {
 }
 
 void Window::initializeObjects() {
-    glm::vec3 eye(0, 0, 20);
     glm::mat4 projection = glm::perspective(glm::radians(60.0f),
                                             float(width) / float(height), 1.0f, 1000.0f);
 
-    camCtl = std::make_shared<FreeFlying>(glm::translate(eye));
-    cam = static_cast<Camera *>(scene.addChild(std::make_unique<Camera>(projection, camCtl)));
+    flyControl = std::make_shared<FreeFlying>(glm::translate(glm::vec3(0, 0, 20)));
+    cameras[0] = static_cast<Camera *>(scene.addChild(std::make_unique<Camera>(projection, flyControl)));
 
     skybox = std::make_unique<Skybox>();
 
@@ -59,6 +58,11 @@ void Window::initializeObjects() {
     auto animation = std::make_shared<ConstraintAnimator>(bezier);
     auto mover = std::make_unique<Node>(animation->control);
     mover->addChild(std::move(scaled_sphere));
+    cameras[1] = static_cast<Camera *>(mover->addChild(
+            std::make_unique<Camera>(projection,
+                                     glm::lookAt(glm::vec3(0.0f, -0.5f, -2.0f),
+                                                 glm::vec3(0.0f, 0.0f, 0.0f),
+                                                 glm::vec3(0.0f, -1.0f, 0.0f)))));
     scene.addChild(std::move(mover));
     scene.addComponent(animation);
 }
@@ -75,8 +79,9 @@ void Window::resizeCallback(int width, int height) {
         glViewport(0, 0, width, height);
 
         // Set the projection matrix.
-        cam->projection = glm::perspective(glm::radians(60.0f),
-                                           float(width) / float(height), 1.0f, 1000.0f);
+        cameras[0]->projection = cameras[1]->projection =
+                glm::perspective(glm::radians(60.0f),
+                                 float(width) / float(height), 1.0f, 1000.0f);
     }
 }
 
@@ -85,17 +90,15 @@ void Window::update() {
 }
 
 void Window::draw() {
-    if (shouldCull) {
-        scene.cull(cam->projection * cam->view);
-    }
+    scene.cull(cameras[0]->projection * cameras[0]->view);
 
     // Clear the color and depth buffers.
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    skybox->draw(glm::mat4(1.0f), cam->projection, cam->view, cam->eye);
+    skybox->draw(glm::mat4(1.0f), cameras[0]->projection, cameras[0]->view, cameras[0]->eye);
 
     for (int i = 0; i < controls.size(); ++i) {
-        controls[i].draw(cam->projection, cam->view, cam->eye, 3 * i + 1);
+        controls[i].draw(cameras[0]->projection, cameras[0]->view, cameras[0]->eye, 3 * i + 1);
     }
 
     // Use cube map
@@ -103,7 +106,7 @@ void Window::draw() {
     glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->cubeMap);
 
     // Render the object.
-    scene.draw(glm::mat4(1.0f), cam->projection, cam->view, cam->eye);
+    scene.draw(glm::mat4(1.0f), cameras[0]->projection, cameras[0]->view, cameras[0]->eye);
 
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
@@ -149,32 +152,32 @@ void Window::keyCallback(int key, int scancode, int action, int mods) {
                 glfwSetWindowShouldClose(window, GL_TRUE);
                 break;
             case GLFW_KEY_W:
-                camCtl->forward = true;
+                flyControl->forward = true;
                 break;
             case GLFW_KEY_A:
-                camCtl->left = true;
+                flyControl->left = true;
                 break;
             case GLFW_KEY_S:
-                camCtl->backward = true;
+                flyControl->backward = true;
                 break;
             case GLFW_KEY_D:
-                camCtl->right = true;
+                flyControl->right = true;
                 break;
             case GLFW_KEY_Q:
-                camCtl->up = true;
+                flyControl->up = true;
                 break;
             case GLFW_KEY_E:
-                camCtl->down = true;
+                flyControl->down = true;
                 break;
             case GLFW_KEY_LEFT_SHIFT:
-                camCtl->local = false;
-                break;
-            case GLFW_KEY_C:
-                shouldCull = !shouldCull;
-                std::cout << "shouldCull: " << shouldCull << std::endl;
+                flyControl->local = false;
                 break;
             case GLFW_KEY_N:
                 std::swap(*shaders[0], *shaders[1]);
+                break;
+            case GLFW_KEY_C:
+                std::swap(cameras[0], cameras[1]);
+                flyControl->freeze = !flyControl->freeze;
                 break;
             default:
                 break;
@@ -182,25 +185,25 @@ void Window::keyCallback(int key, int scancode, int action, int mods) {
     } else if (action == GLFW_RELEASE) {
         switch (key) {
             case GLFW_KEY_W:
-                camCtl->forward = false;
+                flyControl->forward = false;
                 break;
             case GLFW_KEY_A:
-                camCtl->left = false;
+                flyControl->left = false;
                 break;
             case GLFW_KEY_S:
-                camCtl->backward = false;
+                flyControl->backward = false;
                 break;
             case GLFW_KEY_D:
-                camCtl->right = false;
+                flyControl->right = false;
                 break;
             case GLFW_KEY_Q:
-                camCtl->up = false;
+                flyControl->up = false;
                 break;
             case GLFW_KEY_E:
-                camCtl->down = false;
+                flyControl->down = false;
                 break;
             case GLFW_KEY_LEFT_SHIFT:
-                camCtl->local = true;
+                flyControl->local = true;
                 break;
             default:
                 break;
@@ -214,9 +217,9 @@ void Window::mouseButtonCallback(int button, int action, int mods) {
             if (action == GLFW_PRESS) {
                 double x, y;
                 glfwGetCursorPos(window, &x, &y);
-                camCtl->startRotate(FreeFlying::windowCoordToCamDir(x, y, width, height, cam->projection));
+                flyControl->startRotate(FreeFlying::windowCoordToCamDir(x, y, width, height, cameras[0]->projection));
             } else if (action == GLFW_RELEASE) {
-                camCtl->stopRotate();
+                flyControl->stopRotate();
             }
             break;
         case GLFW_MOUSE_BUTTON_RIGHT:
@@ -234,15 +237,15 @@ void Window::mouseButtonCallback(int button, int action, int mods) {
 }
 
 void Window::cursorPosCallback(double x, double y) {
-    camCtl->rotate(FreeFlying::windowCoordToCamDir(x, y, width, height, cam->projection));
+    flyControl->rotate(FreeFlying::windowCoordToCamDir(x, y, width, height, cameras[0]->projection));
 
     if (selected) {
         auto viewport = glm::vec4(0.0f, 0.0f, width, height);
         auto &c = controls[(selected - 1) / 3];
         auto i = (selected - 1) % 3;
         auto win_coord = glm::vec3(x, height - 1 - y,
-                                   glm::project(c.get(i), cam->view, cam->projection, viewport).z);
-        c.set(i, glm::unProject(win_coord, cam->view, cam->projection, viewport));
+                                   glm::project(c.get(i), cameras[0]->view, cameras[0]->projection, viewport).z);
+        c.set(i, glm::unProject(win_coord, cameras[0]->view, cameras[0]->projection, viewport));
         bezier->upload();
     }
 }

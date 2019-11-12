@@ -27,7 +27,7 @@ class Window : public GLContext {
 public:
     Node scene;
 
-    Camera *cam;
+    std::array<Camera *, 2> cameras;
 
     std::unique_ptr<Skybox> skybox;
 
@@ -38,8 +38,7 @@ public:
     std::vector<ControlTriple> controls;
     int selected = 0;
 
-    std::shared_ptr<FreeFlying> camCtl;
-    bool shouldCull = true;
+    std::shared_ptr<FreeFlying> flyControl;
 
     static Window *retrieve(GLFWwindow *w) { return reinterpret_cast<Window *>(glfwGetWindowUserPointer(w)); }
 
