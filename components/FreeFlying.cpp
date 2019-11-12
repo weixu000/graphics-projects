@@ -6,7 +6,7 @@
 #include "../Time.h"
 
 void FreeFlying::startRotate(const glm::vec3 &dir) {
-    startedRotate = true;
+    startedRotate = !freeze;
     initial = dir;
 }
 
@@ -29,6 +29,7 @@ void FreeFlying::rotate(const glm::vec3 &dir) {
 }
 
 void FreeFlying::update() {
+    if (freeze) return;
     const auto sensitivity = 10.0f * Time::delta();
     if (forward) {
         auto vec = local ? glm::vec3(model[2]) : glm::vec3(0.0f, 0.0f, 1.0f);

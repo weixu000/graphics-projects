@@ -23,6 +23,7 @@ public:
 
     bool forward = false, left = false, backward = false, right = false, up = false, down = false;
     bool local = true;
+    bool freeze = false;
 
 private:
     bool startedRotate = false;
