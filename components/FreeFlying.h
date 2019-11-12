@@ -7,22 +7,26 @@ class FreeFlying : public Transform {
 public:
     using Transform::Transform;
 
-    // x,y should be normalized
-    void startRotate(float x, float y);
+    // normalized direction in camera space
+    void startRotate(const glm::vec3 &dir);
 
-    // x,y should be normalized
-    void rotate(float x, float y);
+    // normalized direction in camera space
+    void rotate(const glm::vec3 &dir);
 
     void stopRotate();
 
-    void update();
+    void update() override;
+
+    static glm::vec3 windowCoordToCamDir(float x, float y,
+                                         int width, int height,
+                                         const glm::mat4 &proj);
 
     bool forward = false, left = false, backward = false, right = false, up = false, down = false;
     bool local = true;
 
 private:
     bool startedRotate = false;
-    glm::vec2 initialMouse;
+    glm::vec3 initial;
 };
 
 

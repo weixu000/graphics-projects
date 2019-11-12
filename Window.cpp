@@ -202,7 +202,7 @@ void Window::mouseButtonCallback(int button, int action, int mods) {
             if (action == GLFW_PRESS) {
                 double x, y;
                 glfwGetCursorPos(window, &x, &y);
-                camCtl->startRotate(x / Window::width, y / Window::height);
+                camCtl->startRotate(FreeFlying::windowCoordToCamDir(x, y, width, height, cam->projection));
             } else if (action == GLFW_RELEASE) {
                 camCtl->stopRotate();
             }
@@ -222,7 +222,7 @@ void Window::mouseButtonCallback(int button, int action, int mods) {
 }
 
 void Window::cursorPosCallback(double x, double y) {
-    camCtl->rotate(x / Window::width, y / Window::height);
+    camCtl->rotate(FreeFlying::windowCoordToCamDir(x, y, width, height, cam->projection));
 
     if (selected) {
         auto viewport = glm::vec4(0.0f, 0.0f, width, height);
