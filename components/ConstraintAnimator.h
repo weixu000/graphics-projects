@@ -7,7 +7,7 @@
 
 class ConstraintAnimator : public Component {
 public:
-    explicit ConstraintAnimator(std::shared_ptr<BezierCurve> t, float speed = 1.0f);
+    explicit ConstraintAnimator(std::shared_ptr<BezierCurve> t);
 
     void update() override;
 
@@ -23,7 +23,7 @@ private:
     void set();
 
     float t = 0.0f;
-    float velocity = 1.0f;
+    float velocity = 7.0f;
 };
 
 

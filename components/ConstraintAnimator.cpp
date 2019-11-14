@@ -4,8 +4,8 @@
 #include "ConstraintAnimator.h"
 #include "../Time.h"
 
-ConstraintAnimator::ConstraintAnimator(std::shared_ptr<BezierCurve> t, float speed)
-        : track(std::move(t)), control(std::make_shared<Transform>()), velocity(speed) {
+ConstraintAnimator::ConstraintAnimator(std::shared_ptr<BezierCurve> t)
+        : track(std::move(t)), control(std::make_shared<Transform>()) {
     set();
 }
 
