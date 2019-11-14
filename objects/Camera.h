@@ -18,6 +18,9 @@ public:
 
     std::unique_ptr<Node> copy() override;
 
+    // Camera matrix, inverse of view matrix glm::lookAt
+    static glm::mat4 orientation(const glm::vec3 &eye, const glm::vec3 &center, const glm::vec3 &up);
+
 protected:
     void doCopy(Camera *dup);
 };

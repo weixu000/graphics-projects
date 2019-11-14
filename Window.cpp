@@ -60,9 +60,9 @@ void Window::initializeObjects() {
     mover->addChild(std::move(scaled_sphere));
     cameras[1] = static_cast<Camera *>(mover->addChild(
             std::make_unique<Camera>(projection,
-                                     glm::lookAt(glm::vec3(0.0f, -0.5f, -2.0f),
-                                                 glm::vec3(0.0f, 0.0f, 0.0f),
-                                                 glm::vec3(0.0f, -1.0f, 0.0f)))));
+                                     Camera::orientation(glm::vec3(0.0f, 1.0f, -2.0f),
+                                                         glm::vec3(0.0f, 0.0f, 0.0f),
+                                                         glm::vec3(0.0f, 1.0f, 0.0f)))));
     scene.addChild(std::move(mover));
     scene.addComponent(animation);
 }
