@@ -5,7 +5,7 @@ Camera::Camera(const glm::mat4 &p, const glm::mat4 &t)
 }
 
 Camera::Camera(const glm::mat4 &p, std::shared_ptr<Transform> t)
-        : Node(t), projection(p) {
+        : Node(std::move(t)), projection(p) {
 }
 
 void Camera::update() {
