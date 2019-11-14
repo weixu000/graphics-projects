@@ -69,9 +69,12 @@ glm::mat4 BezierCurve::B(-1, 3, -3, 1,
                          1, 0, 0, 0);
 
 std::tuple<int, float> BezierCurve::segment(float t) {
-    int i = int(std::floor(t));
+    auto i = int(std::floor(t));
     t -= i;
     i = std::div(i, controlPoints.size() / 3).rem;
+    if (i < 0) {
+        i += controlPoints.size() / 3;
+    }
     return std::make_tuple(i, t);
 }
 
