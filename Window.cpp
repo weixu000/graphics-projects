@@ -181,6 +181,10 @@ void Window::keyCallback(int key, int scancode, int action, int mods) {
             case GLFW_KEY_P:
                 animation->pause = !animation->pause;
                 break;
+            case GLFW_KEY_V:
+                animation->uniformSpeed = !animation->uniformSpeed;
+                std::cout << "uniformSpeed: " << std::boolalpha << animation->uniformSpeed << std::endl;
+                break;
             default:
                 break;
         }

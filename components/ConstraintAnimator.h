@@ -15,13 +15,15 @@ public:
 
     bool pause = false;
 
+    bool uniformSpeed = false;
+
 private:
     std::shared_ptr<BezierCurve> track;
 
     void set();
 
     float t = 0.0f;
-    float speed = 10.0f;
+    float velocity = 1.0f;
 };
 
 

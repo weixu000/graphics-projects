@@ -5,13 +5,17 @@
 #include "../Time.h"
 
 ConstraintAnimator::ConstraintAnimator(std::shared_ptr<BezierCurve> t, float speed)
-        : track(std::move(t)), control(std::make_shared<Transform>()), speed(speed) {
+        : track(std::move(t)), control(std::make_shared<Transform>()), velocity(speed) {
     set();
 }
 
 void ConstraintAnimator::update() {
     if (!pause) {
-        t += speed * Time::delta() / glm::length(track->derivative(t));
+        if (!uniformSpeed) {
+            auto a = glm::dot(glm::vec3(0.0f, -9.8f, 0.0f), glm::normalize(track->derivative(t)));
+            velocity += a * Time::delta();
+        }
+        t += velocity * Time::delta() / glm::length(track->derivative(t));
         set();
     }
 }
