@@ -13,6 +13,8 @@ public:
 
     std::shared_ptr<Transform> control;
 
+    bool pause = false;
+
 private:
     std::shared_ptr<BezierCurve> track;
 

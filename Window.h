@@ -22,6 +22,7 @@
 #include "gl_wraps/GLContext.h"
 #include "components/geometries/BezierCurve.h"
 #include "objects/ControlTriple.h"
+#include "components/ConstraintAnimator.h"
 
 class Window : public GLContext {
 public:
@@ -39,6 +40,8 @@ public:
     int selected = 0;
 
     std::shared_ptr<FreeFlying> flyControl;
+
+    std::shared_ptr<ConstraintAnimator> animation;
 
     static Window *retrieve(GLFWwindow *w) { return reinterpret_cast<Window *>(glfwGetWindowUserPointer(w)); }
 

@@ -2,7 +2,6 @@
 
 #include "Window.h"
 #include "Time.h"
-#include "components/ConstraintAnimator.h"
 
 Window::Window() {
     setupCallbacks();
@@ -55,7 +54,7 @@ void Window::initializeObjects() {
     auto scaled_sphere = std::make_unique<Node>(glm::scale(glm::vec3(0.2f)));
     scaled_sphere->addComponent(sphere);
 
-    auto animation = std::make_shared<ConstraintAnimator>(bezier);
+    animation = std::make_shared<ConstraintAnimator>(bezier);
     auto mover = std::make_unique<Node>(animation->control);
     mover->addChild(std::move(scaled_sphere));
     cameras[1] = static_cast<Camera *>(mover->addChild(
@@ -178,6 +177,9 @@ void Window::keyCallback(int key, int scancode, int action, int mods) {
             case GLFW_KEY_C:
                 std::swap(cameras[0], cameras[1]);
                 flyControl->freeze = !flyControl->freeze;
+                break;
+            case GLFW_KEY_P:
+                animation->pause = !animation->pause;
                 break;
             default:
                 break;

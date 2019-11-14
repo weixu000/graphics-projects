@@ -10,8 +10,10 @@ ConstraintAnimator::ConstraintAnimator(std::shared_ptr<BezierCurve> t, float spe
 }
 
 void ConstraintAnimator::update() {
-    t += speed * Time::delta() / glm::length(track->derivative(t));
-    set();
+    if (!pause) {
+        t += speed * Time::delta() / glm::length(track->derivative(t));
+        set();
+    }
 }
 
 void ConstraintAnimator::set() {
