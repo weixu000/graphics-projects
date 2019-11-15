@@ -16,8 +16,8 @@ void ConstraintAnimator::update() {
             velocity += a * Time::delta();
         }
         t += velocity * Time::delta() / glm::length(track->derivative(t));
-        set();
     }
+    set();
 }
 
 void ConstraintAnimator::set() {

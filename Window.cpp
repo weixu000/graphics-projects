@@ -49,7 +49,7 @@ void Window::initializeObjects() {
     bezier->upload();
     scene.addComponent(bezier);
 
-    auto sphere = std::make_shared<Mesh>(Mesh::fromObjFile("meshes/bunny.obj"));
+    auto sphere = std::make_shared<Mesh>(Mesh::fromObjFile("meshes/sphere.obj"));
     sphere->useShader(shaders[0]);
     auto scaled_sphere = std::make_unique<Node>(glm::scale(glm::vec3(0.2f)));
     scaled_sphere->addComponent(sphere);
