@@ -1,6 +1,6 @@
 # Projects for Computer Graphics
 I took UCSD CSE 167 in Fall 2019, descriptions can be found [here](http://ivl.calit2.net/wiki/index.php/ProjectsHomeworkCSE167F19).
-Each project completed is tagged by Project1, Project2, Project3.
+Each project completed is tagged by Project1, Project2, Project3, and Project4.
 
 FOR ARCHIVE ONLY, DO NOT COPY!!!
 
