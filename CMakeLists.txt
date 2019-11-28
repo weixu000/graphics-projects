@@ -15,7 +15,6 @@ add_executable(Project3
         Window.cpp Window.h
         GLContext.h GLContext.cpp
         Material.cpp Material.h
-        PointLight.cpp PointLight.h
         Time.cpp Time.h
         objects/Node.h objects/Node.cpp
         components/Component.h
