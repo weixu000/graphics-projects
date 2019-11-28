@@ -27,7 +27,7 @@ void Window::initializeProgram() {
 
 void Window::initializeObjects() {
     glm::mat4 projection = glm::perspective(glm::radians(60.0f),
-                                            float(width) / float(height), 1.0f, 1000.0f);
+                                            float(width) / float(height), 0.1f, 1000.0f);
 
     flyControl = std::make_shared<FreeFlying>(glm::translate(glm::vec3(0, 0, 20)));
     cameras[0] = static_cast<Camera *>(scene.addChild(std::make_unique<Camera>(projection, flyControl)));
@@ -80,7 +80,7 @@ void Window::resizeCallback(int width, int height) {
         // Set the projection matrix.
         cameras[0]->projection = cameras[1]->projection =
                 glm::perspective(glm::radians(60.0f),
-                                 float(width) / float(height), 1.0f, 1000.0f);
+                                 float(width) / float(height), 0.1f, 1000.0f);
     }
 }
 
